@@ -41,16 +41,44 @@ The goal of the application is to help users quickly locate plants suited to the
 
 ---
 
-## Iteration 1 Goal
+## Development Iterations
 
-The goal of Iteration 1 is to build the **functional core of the system**.
+### Iteration 1 – Demo Ready (Labs 5–7)
 
-By the end of Lab 7, the system should demonstrate:
+Goal: Demonstrate the core functionality where an administrator uploads a plant and a user can search for that plant in the catalogue.
 
-1. An **admin uploading a plant**
-2. A **user searching for that plant**
-3. Basic login functionality
-4. Fast and responsive search/filter behavior
+Key Features:
+- Add plants to the catalogue
+- Update plant descriptions
+- Upload and change plant photos
+- Search plants by category
+- Basic login/logout system
+- Ensure the application runs without noticeable delay
+
+---
+
+### Iteration 2 – Quality & User Experience (Labs 8–10)
+
+Goal: Improve the usability of the application and expand the catalogue management features after receiving feedback from the initial demo.
+
+Key Features:
+- Remove or hide plants that are no longer available
+- Reset password functionality
+- Filter plants by categories
+- Sort results (price or alphabetical)
+- UI improvements and visual polish
+
+---
+
+### Iteration 3 – Advanced Features & Final Delivery (Labs 11–12)
+
+Goal: Implement additional features that enhance the system and complete the final version of the project.
+
+Key Features:
+- Wishlist functionality
+- SQL-based plant recommendations
+- Purchasing system
+- Final testing and bug fixes
 
 ---
 
