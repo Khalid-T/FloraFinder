@@ -59,6 +59,7 @@ By the end of Lab 7, the system should demonstrate:
 * Frontend: HTML / CSS / JavaScript
 * Backend:  Java 
 * Version Control: Git + GitHub
+* Database: SQL (e.g., MySQL / SQLite)
 
 ---
 
