@@ -1,41 +1,101 @@
-S.No,Name,Family,Genus,Order,Kingdom,Suitable Soil pH
-1,Jasmine,Oleaceae,Jasminum; L.,Lamiales, Plantae,4.9-8.3
-2,Curcuma caesia,Zingiberaceae,Curcuma,Zingiberales,Plantae,4.5-6.5
-3,Curry Tree,Rutaceae,Murraya,Sapindales,Plantae,5.6-6
-4,Indian gooseberry,Phyllanthaceae,Phyllanthus,Malpighiales,Plantae,6.5-9.5
-5,Hibiscus,Malvaceae,Hibiscus,Malvales,Plantae,5.5-6.5
-6,Rose apple,Myrtaceae,Syzygium,Myrtales,Plantae,5.5-6.5
-7,Passiflora incarnata (Purple),Passifloraceae,Passiflora,Malpighiales,Plantae,6.1-7.5
-8,White-fleshed pitahaya,Cactaceae,Selenicereus,Caryophyllales,Plantae,5.5-6.5
-9,Chrysanthemums,Asteraceae,Chrysanthemum,Asterales,Plantae,6.5-7.0
-10,Mentha,Mints,Mentha,Lamiales,Plantae,6.0-7.5
-11,Sapodilla,Sapotaceae,Manilkara,Heathers and allies,Plantae,6.0-8.0
-12,Snake gourd,Cucurbitaceae,Trichosanthes,Cucurbitales,Plantae,6.0-7.0
-13,Key lime,Rutaceae,Citrus,Sapindales,Plantae,5.5-7.5
-14,Cucumber,Cucurbitaceae,Cucumis,Cucurbitales,Plantae,6.0-8.5
-15,Trailing arbutus,Ericaceae,Epigaea,Heathers and allies,Plantae,6.1-6.8
-16,Betel,Piperaceae,Pepper plants,Piperales,Plantae,5.6-8.2
-17,Rose ,Rosaceae,Rosa,Rosales,Plantae,6.0-6.5
-18,Wild sweetsop,Annonaceae,Annona reticulata,Magnoliales,Plantae,5.0-8.0
-19,Jack tree,Moraceae,Artocarpus,Rosales,Plantae,6.0-6.5
-20,Cymbopogon citratus,Poaceae,Fress Lemongrass,Poales,Plantae,5.0-5.8
-21,Amorphophallus paeoniifolius,Araceae,Amorphophallus,Alismatales,Plantae,5.5-7.0
-22,Chamaecostus cuspidatus,Costaceae,Chamaecostus,Zingiberales,Plantae,6.5-7.5
-23,Nyctanthes arbor-tristis,Oleaceae,Nyctanthes,Lamiales,Plantae,5.6-6.0
-24,Amaranthus,Amarnathaceae,Amaranthus;L,Caryophyllales,Plantae,4.5-8.0
-25,Calabash,Cucurbitaceae,Lagenaria,Cucurbitales,Plantae,6.5-7.5
-26,Saussurea obvallata ,Asteraceae,Saussurea,Asterales,Plantae,6.5-7.5
-27,Leonotis nepetifolia,Lamiaceae,Leonotis,Lamiales,Plantae,4.6-6.5
-28,Lawsonia inermis(Henna),Lythraceae,Lawsonia,Myrtales,Plantae,5.6-5.9
-29,Spine gourd,Cucurbits,Momordica,Cucurbitales,Plantae,6.0-7.0
-30,Clitoria ternatea,Fabaceae,Clitoria,Fabales,Plantae,5.5-8.9
-31,Ziziphus mauritiana,Rhamnaceae,Jujube,Rosales,Plantae,9.2
-32,Tinospora cordifolia,Menispermaceae,Tinospora,Ranunculales,Plantae,6.2-7.6
-33,Moringa oleifera,Moringaceae,Moringa,Brassicales,Plantae,4.5-8.5
-34,Mangifera indica,Anacardiaceae,Mangifera,Sapindales,Plantae,5.5-7.5
-35,Echinochloa colona,Poaceae,Barnyard grasses,Poales,Plantae,5.5-6.5
-36,Ocimum tenuiflorum,Lamiaceae,Basil,Lamiales,Plantae,6.0-7.5
-37,Ajwain,Apiaceae,Trachyspermum,Apiales,Plantae,6.5-7.5
-38,Camellia sinensis,Theaceae,Camellia,Ericales,Plantae,4.2
-39,Aegle marmelos,Rutaceae,"Aegle,Correa",Sapindales,Plantae,5.0-10.0
-40,Epipremnum aureum,Araceae,Epipremnum,Alismatales,Plantae,6.1-6.5
+"Symbol","Scientific Name with Author","GSAT Common Name","State"
+"ABTH","Abutilon theophrasti Medik.","VELVETLEAF","Alabama"
+"ACHI","Acanthospermum hispidum DC.","VELVETLEAF","Alabama"
+"ACMI2","Achillea millefolium L.","Common yarrow","Alabama"
+"ACRU","Acer rubrum L.","RED MAPLE","Alabama"
+"ACSA2","Acer saccharinum L.","SILVER MAPLE","Alabama"
+"AESCH","Aeschynomene L.","Common yarrow","Alabama"
+"AGGI","Agrostemma githago L.","CORNCOCKLE","Alabama"
+"AGGI2","Agrostis gigantea Roth","REDTOP","Alabama"
+"ALVI","Allium vineale L.","WILD GARLIC","Alabama"
+"AMAL","Amaranthus albus L.","prostrate pigweed","Alabama"
+"ABAB","Abutilon abutiloides (Jacq.) Garcke ex Hochr.","shrubby Indianmallow","Arizona"
+"ABAN","Abronia angustifolia Greene","purple sand-verbena","Arizona"
+"ABCO","Abies concolor (Gord. & Glend.) Lindl. ex Hildebr.","white fir","Arizona"
+"ABIES","Abies Mill.","Abies","Arizona"
+"ABIN","Abutilon incanum (Link) Sweet","Pringle Indianmallow","Arizona"
+"ABIN","Abutilon incanum (Link) Sweet","orange Indianmallow","Arizona"
+"ABLA","Abies lasiocarpa (Hook.) Nutt.","subalpine fir","Arizona"
+"ABNA","Abronia nana S. Watson","dwarf sand-verbena","Arizona"
+"ABPA","Abutilon palmeri A. Gray","Palmer Indianmallow","Arizona"
+"ABPA3","Abutilon parvulum A. Gray","dwarf Indianmallow","Arizona"
+"ABCO","Abies concolor (Gord. & Glend.) Lindl. ex Hildebr.","white fir","Idaho"
+"ABGR","Abies grandis (Douglas ex D. Don) Lindl.","grand fir","Idaho"
+"ABLA","Abies lasiocarpa (Hook.) Nutt.","subalpine fir","Idaho"
+"ACCO4","Aconitum columbianum Nutt.","Columbian monkshood","Idaho"
+"ACGI","Acer ginnala Maxim.","Amur maple","Idaho"
+"ACGL","Acer glabrum Torr.","Rocky Mountain maple","Idaho"
+"ACGLD4","Acer glabrum Torr. var. douglasii (Hook.) Dippel","Douglas maple","Idaho"
+"ACGR3","Acer grandidentatum Nutt.","bigtooth maple","Idaho"
+"ACGRG","Acer grandidentatum Nutt. var. grandidentatum","bigtooth maple","Idaho"
+"ACHNA","Achnatherum P. Beauv.","needlegrass","Idaho"
+"ACAN11","Acaciella angustissima (Mill.) Britton & Rose","prairie acacia","Kansas"
+"ACHIL","Achillea L.","yarrow","Kansas"
+"ACHY","Achnatherum hymenoides (Roem. & Schult.) Barkworth","INDIAN RICEGRASS","Kansas"
+"ACMI2","Achillea millefolium L.","Common yarrow","Kansas"
+"ACMIO","Achillea millefolium L. var. occidentalis DC.","WESTERN YARROW","Kansas"
+"ACNE2","Acer negundo L.","BOXELDER","Kansas"
+"ACSA2","Acer saccharinum L.","SILVER MAPLE","Kansas"
+"AECY","Aegilops cylindrica Host","JOINTED GOATGRASS","Kansas"
+"AEGL","Aesculus glabra Willd.","Ohio buckeye","Kansas"
+"AGALA","Ageratina altissima (L.) R.M. King & H. Rob. var. altissima","WHITE SNAKEROOT","Kansas"
+"ABELM","Abelmoschus Medik.","okra","Louisiana"
+"ABES","Abelmoschus esculentus (L.) Moench","okra","Louisiana"
+"ABHU","Abutilon hulseanum (Torr. & A. Gray) Torr. ex A. Gray","mauve","Louisiana"
+"ABTH","Abutilon theophrasti Medik.","VELVETLEAF","Louisiana"
+"ABUTI","Abutilon Mill.","Indian mallow","Louisiana"
+"ACACI","Acacia Mill.","Acacia","Louisiana"
+"ACAL2","Acalypha alopecuroidea Jacq.","foxtail copperleaf","Louisiana"
+"ACALY","Acalypha L.","copperleaf","Louisiana"
+"ACAN11","Acaciella angustissima (Mill.) Britton & Rose","prairie acacia","Louisiana"
+"ACANH2","Acaciella angustissima (Mill.) Britton & Rose var. hirta (Nutt.) B.L.","hirta","Louisiana"
+"AGCR","Agropyron cristatum (L.) Gaertn.","CRESTED WHEATGRASS","Minnesota"
+"AGGI2","Agrostis gigantea Roth","REDTOP","Minnesota"
+"ANGE","Andropogon gerardii Vitman","BIG BLUESTEM","Minnesota"
+"BOCU","Bouteloua curtipendula (Michx.) Torr.","SIDEOATS GRAMA","Minnesota"
+"BODA2","Bouteloua dactyloides (Nutt.) J.T. Columbus","BUFFALOGRASS","Minnesota"
+"BOGR2","Bouteloua gracilis (Willd. ex Kunth) Lag. ex Griffiths","BLUE GRAMA","Minnesota"
+"BRCI2","Bromus ciliatus L.","fringed brome","Minnesota"
+"BRIN2","Bromus inermis Leyss.","SMOOTH BROME","Minnesota"
+"BRTE","Bromus tectorum L.","CHEATGRASS","Minnesota"
+"CACA4","Calamagrostis canadensis (Michx.) P. Beauv.","bluejoint","Minnesota"
+"ABFR2","Abronia fragrans Nutt. ex Hook.","SNOWBALL SANDVERBENA","Missouri"
+"ABTH","Abutilon theophrasti Medik.","VELVETLEAF","Missouri"
+"ACAN11","Acaciella angustissima (Mill.) Britton & Rose","prairie wattle","Missouri"
+"ACCA4","Acorus calamus L.","SWEETFLAG","Missouri"
+"ACGR2","Acalypha gracilens A. Gray","SLENDER COPERLEAF","Missouri"
+"ACHY","Achnatherum hymenoides (Roem. & Schult.) Barkworth","INDIAN RICEGRASS","Missouri"
+"ACMI2","Achillea millefolium L.","yarrow","Missouri"
+"ACNE2","Acer negundo L.","BOXELDER","Missouri"
+"ACOS","Acalypha ostryifolia Riddell","THREE-SEEDED MERCURY","Missouri"
+"AGEL4","Agrostis elliottiana Schult.","ELLIOTT'S BENT","Missouri"
+"ABFR2","Abronia fragrans Nutt. ex Hook.","snowball sand verbena","Nebraska"
+"ABTH","Abutilon theophrasti Medik.","VELVETLEAF","Nebraska"
+"ACER","Acer L.","maple","Nebraska"
+"ACGL","Acer glabrum Torr.","Rocky Mountain maple","Nebraska"
+"ACHY","Achnatherum hymenoides (Roem. & Schult.) Barkworth","INDIAN RICEGRASS","Nebraska"
+"ACMI2","Achillea millefolium L.","Common yarrow","Nebraska"
+"ACNE2","Acer negundo L.","BOXELDER","Nebraska"
+"ACRE3","Acroptilon repens (L.) DC.","HARDHEADS","Nebraska"
+"ACRH","Acalypha rhomboidea Raf.","Virginia threeseed mercury","Nebraska"
+"ACRU2","Actaea rubra (Aiton) Willd.","RED BANEBERRY","Nebraska"
+"ABBA","Abies balsamea (L.) Mill.","balsam fir","Nevada"
+"ABCO","Abies concolor (Gord. & Glend.) Lindl. ex Hildebr.","Rocky Mountain white fir","Nevada"
+"ABCO","Abies concolor (Gord. & Glend.) Lindl. ex Hildebr.","white fir","Nevada"
+"ABEL","Abronia elliptica A. Nelson","fragrant white sandverbena","Nevada"
+"ABFR2","Abronia fragrans Nutt. ex Hook.","SNOWBALL SANDVERBENA","Nevada"
+"ABIES","Abies Mill.","fir","Nevada"
+"ABLA","Abies lasiocarpa (Hook.) Nutt.","subalpine fir","Nevada"
+"ABLAL","Abies lasiocarpa (Hook.) Nutt. var. lasiocarpa","subalpine fir","Nevada"
+"ABLO","Abies lowiana (Gordon & Glend.) A. Murray bis","California white fir","Nevada"
+"ABMA","Abies magnifica A. Murray bis","California red fir","Nevada"
+"ABBA","Abies balsamea (L.) Mill.","balsam fir","New Mexico"
+"ABCO","Abies concolor (Gord. & Glend.) Lindl. ex Hildebr.","Rocky Mountain white fir","New Mexico"
+"ABCO","Abies concolor (Gord. & Glend.) Lindl. ex Hildebr.","white fir","New Mexico"
+"ABEL","Abronia elliptica A. Nelson","fragrant white sandverbena","New Mexico"
+"ABFR2","Abronia fragrans Nutt. ex Hook.","SNOWBALL SANDVERBENA","New Mexico"
+"ABIES","Abies Mill.","fir","New Mexico"
+"ABLA","Abies lasiocarpa (Hook.) Nutt.","subalpine fir","New Mexico"
+"ABLAL","Abies lasiocarpa (Hook.) Nutt. var. lasiocarpa","subalpine fir","New Mexico"
+"ABLO","Abies lowiana (Gordon & Glend.) A. Murray bis","California white fir","New Mexico"
+"ABMA","Abies magnifica A. Murray bis","California red fir","New Mexico"
