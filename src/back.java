@@ -11,20 +11,18 @@ public class back{
         conn.close();
     }
 
-    private void add(String Name,String Family,String Genus, String plantOrder, String Kingdom, String pH) throws SQLException{
+    private void add(String Symbol,String SciName,String CommonName, String Region) throws SQLException{
 
         PreparedStatement added = conn.prepareStatement(
-                                                        "INSERT INTO plants (Name, Family, Genus, PlantOrder, Kingdom, pH) VALUES (?, ?, ?, ?, ?, ?)"
-                                                        );
-        added.setString(1, Name);
-        added.setString(2, Family);
-        added.setString(3, Genus);
-        added.setString(4, plantOrder);
-        added.setString(5, Kingdom);
-        added.setString(6, pH);
+                                                        "INSERT INTO plants (symbol, scientific_name, common_name, state) VALUES (?, ?, ?, ?)" );
+
+        added.setString(1, Symbol);
+        added.setString(2, SciName);
+        added.setString(3, CommonName);
+        added.setString(4, Region);
         added.executeUpdate();
 
-        System.out.println("added "+Name +" to the list");
+        System.out.println("added "+CommonName +" to the list");
 
         added.close();
     }
@@ -38,21 +36,28 @@ public class back{
 
         System.out.println("Connected to db \n\n tpye quit to stop");
 
-        Scanner input = new Scanner(System.in);
-        String command;
+
+        app.add("test","test","test","test");
+        // Scanner input = new Scanner(System.in);
+
+
+/*
         while (true){
-            command = input.nextLine();
-            if (command.equals("quit")){
+            input.nextLine();
+            if (input.equals("quit")){
                 break;
 
-            }else if (command.equals("add")){
+            }else if (input.equals("add")){
 
 
             }
             
 
         }
-        input.close();
+         input.close();
+
+*/
+
         app.close();
     }
 }
