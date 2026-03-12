@@ -69,6 +69,26 @@ public class back{
     }
 }
 
+    public List<String[]> searchByState(String state) throws SQLException { // function that searches for a plant by state
+        List<String[]> results = new ArrayList<>();
+        String query = "SELECT * FROM plants WHERE LOWER(state) = LOWER(?)";
+
+        try (PreparedStatement searched = conn.prepareStatement(query)) {
+            searched.setString(1, state);
+            try (ResultSet rs = searched.executeQuery()) {
+                while (rs.next()) {
+                    results.add(new String[]{
+                        rs.getString("symbol"),
+                        rs.getString("scientific_name"),
+                        rs.getString("common_name"),
+                        rs.getString("state")
+                    });
+                }
+            }
+        }
+        return results;
+    }
+
 
     public  static void  main(String[] args) throws  Exception{
 
