@@ -3,6 +3,9 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 
+// compile using ---- javac -cp ".;lib/*" src/back.java
+// run using ---- java -cp ".;src;lib/*" back
+
 public class back{
     private Connection conn;
 
@@ -45,50 +48,47 @@ public class back{
         added.close();
     }
 
-    public List<String[]> searchByName(String name) throws SQLException { // function that searches for a plant by name
+    public List<String[]> searchByName(String name) throws SQLException {
     List<String[]> results = new ArrayList<>();
     String query = "SELECT symbol, scientific_name, common_name, state FROM plants WHERE LOWER(common_name) LIKE LOWER(?)";
 
     try (PreparedStatement searched = conn.prepareStatement(query)) {
-        searched.setString(1, "%" + name + "%"); // search for partial matches to what the user entered
-        
-        try (ResultSet rs = searched.executeQuery()) { // execute the query and get the results
-            while (rs.next()) {
-                String[] plantData = {
-                    rs.getString("symbol"),
-                    rs.getString("scientific_name"),
-                    rs.getString("common_name"),
-                    rs.getString("state")
-                };
-                results.add(plantData); 
+        searched.setString(1, "%" + name + "%");  // adding % allows partial matches
+        try (ResultSet rs = searched.executeQuery()) {
+            while (rs.next()) { 
+                results.add(new String[]{
+                    rs.getString("symbol"), rs.getString("scientific_name"),
+                    rs.getString("common_name"), rs.getString("state")
+                });
             }
         }
         return results;
     } catch (SQLException e) {
-        System.out.println("Error searching for plant: " + e.getMessage());
-        return results; // returns an empty list if an error occurs
+        System.out.println("Error searching by name: " + e.getMessage());
+        return results;
     }
 }
 
-    public List<String[]> searchByState(String state) throws SQLException { // function that searches for a plant by state
-        List<String[]> results = new ArrayList<>();
-        String query = "SELECT * FROM plants WHERE LOWER(state) = LOWER(?)";
+public List<String[]> searchByState(String state) throws SQLException {
+    List<String[]> results = new ArrayList<>();
+    // using LIKE instead of '=' makes it feel more like a flexible filter
+    String query = "SELECT symbol, scientific_name, common_name, state FROM plants WHERE LOWER(state) LIKE LOWER(?)";
 
-        try (PreparedStatement searched = conn.prepareStatement(query)) {
-            searched.setString(1, state);
-            try (ResultSet rs = searched.executeQuery()) {
-                while (rs.next()) {
-                    results.add(new String[]{
-                        rs.getString("symbol"),
-                        rs.getString("scientific_name"),
-                        rs.getString("common_name"),
-                        rs.getString("state")
-                    });
-                }
+    try (PreparedStatement searched = conn.prepareStatement(query)) {
+        searched.setString(1, "%" + state + "%"); // adding % allows partial matches
+        try (ResultSet rs = searched.executeQuery()) {
+            while (rs.next()) {
+                results.add(new String[]{
+                    rs.getString("symbol"),
+                    rs.getString("scientific_name"),
+                    rs.getString("common_name"),
+                    rs.getString("state")
+                });
             }
         }
-        return results;
     }
+    return results;
+}
 
 
     public  static void  main(String[] args) throws  Exception{
@@ -97,7 +97,7 @@ public class back{
 
         back app = new back();
 
-        System.out.println("Connected to db \n\n tpye quit to stop");
+        System.out.println("Connected to db \n\n type quit to stop");
 
 
         app.add("test","test","test","test");
