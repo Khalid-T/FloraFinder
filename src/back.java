@@ -2,32 +2,78 @@ import java.sql.*;
 import java.util.Scanner;
 
 public class back{
-    private Connection conn;
-
+    private boolean is_admin =false;
+    private Connection conn; // inialision conn to the database so i can acces it form anywhere
     public back() throws SQLException {
-        conn = DriverManager.getConnection("jdbc:sqlite:database/plants.db");
+        conn = DriverManager.getConnection("jdbc:sqlite:database/database.db");
     }
     public void close() throws SQLException {
         conn.close();
     }
-   private void remove(String entry) throws SQLException{
 
+    //------------------------------------login --------------------------------------------
+
+    private boolean login(String username, String password) throws SQLException{
+
+        PreparedStatement stmt = conn.prepareStatement( "SELECT * FROM users WHERE username = ? AND password = ?");
+         stmt.setString(1,username);
+         stmt.setString(2,password);
+
+         boolean success = false;
+
+         ResultSet rs = stmt.executeQuery();
+         if (rs.next()) {
+             success = true;
+             is_admin = rs.getInt("admin") == 1;
+         }
+
+         rs.close();
+
+         stmt.close();
+         if (success) {
+             System.out.println("[log] " + username + " has logged in");
+
+             if (is_admin) {
+                 System.out.println("[log] user is admin");
+             } else {
+                 System.out.println("[log] user is normal user");
+             }
+
+         } else {
+             System.out.println("[log] " + username + " login didn't work");
+         }
+
+    return success;    }
+    //---------------------------------------------------------------
+
+
+    // ------------------------- remove fuction-----------------------
+    private String remove(String entry) throws SQLException{
+        if (is_admin == false){
+             System.out.println("[log] login first");
+            return "login as an admin first";
+        }
         PreparedStatement removed = conn.prepareStatement(
                     "DELETE FROM plants Where common_name = ?" );
 
         removed.setString(1,entry);
 
-
         int done = removed.executeUpdate();
 
 
-        System.out.println("removed " + done + " entr" + (done == 1 ? "y" : "ies"));
+        System.out.println("[log] removed " + done + " entr" + (done == 1 ? "y" : "ies"));
 
         removed.close();
+        return "Removed " +entry+" form the database";
     }
+    //-------------------------------------------------------------------------------------
 
-    private void add(String Symbol,String SciName,String CommonName, String Region) throws SQLException{
-
+    // ------------------------------------ add plants to database --------------------------
+    private String  add(String Symbol,String SciName,String CommonName, String Region) throws SQLException{
+        if (is_admin == false){
+            System.out.println("[log] login first");
+            return "login as admin before adding plants";
+        }
         PreparedStatement added = conn.prepareStatement(
                                                         "INSERT INTO plants (symbol, scientific_name, common_name, state) VALUES (?, ?, ?, ?)" );
 
@@ -37,10 +83,13 @@ public class back{
         added.setString(4, Region);
         added.executeUpdate();
 
-        System.out.println("added "+CommonName +" to the list");
+        System.out.println("[log] added "+ CommonName+ " to the database");
 
         added.close();
+        return "\nadded "+ CommonName+ " to the list";
+
     }
+    //-------------------------------------------------------------------------------
 
 
     public  static void  main(String[] args) throws  Exception{
@@ -49,8 +98,13 @@ public class back{
 
         back app = new back();
 
-        System.out.println("Connected to db \n\n tpye quit to stop");
+        System.out.println("Connected to db \n\n");
 
+        //app.login("admin","admin");
+        app.add("test","test","test","test");
+        app.remove("test");
+
+        app.login("admin","admin");
 
         app.add("test","test","test","test");
 
