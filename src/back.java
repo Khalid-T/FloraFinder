@@ -127,7 +127,7 @@ public class back{
 
 
 
-    //-------------------- SearchByName --------------------------------------------
+    //-------------------- SearchByState --------------------------------------------
 
     public List<String[]> searchByState(String state) throws SQLException {
         List<String[]> results = new ArrayList<>();
