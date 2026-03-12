@@ -7,11 +7,12 @@ public class back{
     private Connection conn;
 
     public back() throws SQLException {
-        conn = DriverManager.getConnection("jdbc:sqlite:database/plants.db");
+        conn = DriverManager.getConnection("jdbc:sqlite:./database/plants.db");
     }
     public void close() throws SQLException {
         conn.close();
     }
+
    private void remove(String entry) throws SQLException{
 
         PreparedStatement removed = conn.prepareStatement(
