@@ -20,7 +20,10 @@ public class back{
 
 
     //------------------------------------login --------------------------------------------
-
+    public void logout(){
+        System.out.println("[log] admin has logged off");
+        is_admin = false; 
+    }
     public boolean login(String username, String password) throws SQLException{
 
         PreparedStatement stmt = conn.prepareStatement( "SELECT * FROM users WHERE username = ? AND password = ?");
@@ -172,7 +175,11 @@ public class back{
                 ctx.redirect("/signin.html?error=1");
             }
         });
-
+        server.get("/logout", ctx ->{
+            ctx.req().getSession().invalidate();
+            appLogic.logout();
+            ctx.redirect("/signin.html");
+        });
         server.get("/search-plants", ctx -> {
             String query = ctx.queryParam("q");
             String type = ctx.queryParam("type");
