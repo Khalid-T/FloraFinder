@@ -15,14 +15,13 @@ CSCI 2040U – Software Design and Analysis
 
 ## Project Overview
 
-The Plant Catalogue System is a web application that allows administrators to upload and manage plant information while enabling users to search and filter plants based on different characteristics such as light requirements, soil type, and price.
+The Plant Catalogue System is a web application that lets administrators upload and manage plant information while users search and filter plants by characteristics (e.g., light, soil, region, price). The goal is to help people quickly locate plants suited to their needs without scrolling large catalogues.
 
-The goal of the application is to help users quickly locate plants suited to their needs without scrolling through large catalogues.
+## Dependencies
 
-## Dependancys used 
-slf4j-api-2.0.9.jar
-slf4j-simple-2.0.9.jar
-sqlite-jdbc-3.45.1.0.jar
+- slf4j-api-2.0.9.jar
+- slf4j-simple-2.0.9.jar
+- sqlite-jdbc-3.45.1.0.jar
 
 ---
 
@@ -30,60 +29,33 @@ sqlite-jdbc-3.45.1.0.jar
 
 ### Admin Features
 
-* Add plants to the catalogue
-* Update plant descriptions
-* Change plant pictures
-* Remove or hide plants that are no longer available
-* Access user information for account support
+* Add and update plants (names, descriptions, photos)
+* Remove or hide plants no longer available
+* View basic user info for account support
 
 ### User Features
 
-* Search plants by category (light, soil, price)
-* Filter plant results
+* Search plants by name or region
+* Filter and sort plant results
 * Login and logout functionality
-* Sort plant results
-* Wishlist system (future iteration)
+* Wishlist system and recommendations (planned)
 
 ---
 
 ## Development Iterations
 
-### Iteration 1 – Demo Ready (Labs 5–7)
-
-Goal: Demonstrate the core functionality where an administrator uploads a plant and a user can search for that plant in the catalogue.
-
-Key Features:
-- Add plants to the catalogue
-- Update plant descriptions
-- Upload and change plant photos
-- Search plants by category
-- Basic login/logout system
-- Ensure the application runs without noticeable delay
+### Iteration Overview
+- Iteration 1 (Labs 5–7): Core demo — admin uploads plants; users search/filter; basic login/logout; keep it responsive.
+- Iteration 2 (Labs 8–10): UX and quality — confirmations, richer filters/sorting, remove/hide plants, password reset, UI polish, wishlists.
+- Iteration 3 (Labs 11–12): Final delivery — recommendations, purchasing flow, wishlist improvements, final testing.
 
 ---
 
-### Iteration 2 – Quality & User Experience (Labs 8–10)
-
-Goal: Improve the usability of the application and expand the catalogue management features after receiving feedback from the initial demo.
-
-Key Features:
-- Remove or hide plants that are no longer available
-- Reset password functionality
-- Filter plants by categories
-- Sort results (price or alphabetical)
-- UI improvements and visual polish
-
----
-
-### Iteration 3 – Advanced Features & Final Delivery (Labs 11–12)
-
-Goal: Implement additional features that enhance the system and complete the final version of the project.
-
-Key Features:
-- Wishlist functionality
-- SQL-based plant recommendations
-- Purchasing system
-- Final testing and bug fixes
+## Build & Run
+```
+mvn clean package
+mvn exec:java -Dexec.mainClass="back"
+```
 
 ---
 
@@ -99,5 +71,4 @@ Key Features:
 
 ## Current Status
 
-Project repository initialized.
-Iteration 1 development in progress.
+Login/search baseline works; add/remove and logout are underway; later iteration features (password reset, purchasing, recommendations) are still pending.
