@@ -243,16 +243,18 @@ public class back{
             ctx.redirect("/signin.html");
         });
        server.post("/add-plant", ctx -> {
-               String symbol = ctx.formParam("symbol");
-               String scientificName = ctx.formParam("scientific_name");
-               String commonName = ctx.formParam("common_name");
-               String state = ctx.formParam("state");
-               String lightRequirement = ctx.formParam("light_requirement");
-               String waterRequirement = ctx.formParam("water_requirement");
-               String plantType = ctx.formParam("plant_type");
-               String description = ctx.formParam("description");
-               String result = appLogic.add(symbol, scientificName, commonName, state, lightRequirement, waterRequirement, plantType, description);
-               ctx.result(result);        });
+               String commonName     = ctx.formParam("common_name");
+               String sciName        = ctx.formParam("sci_name");
+               String family         = ctx.formParam("family");
+               String genus          = ctx.formParam("genus");
+               String speciesEpithet = ctx.formParam("species_epithet");
+               String careLevel      = ctx.formParam("care_level");
+               String watering       = ctx.formParam("watering");
+               String origin         = ctx.formParam("origin");
+               String description    = ctx.formParam("description");
+               String result = appLogic.add(commonName, sciName, family, genus, speciesEpithet, careLevel, watering, origin, description);
+               ctx.result(result);
+           });
 
         server.post("/remove-plant", ctx -> {
             String commonName = ctx.formParam("common_name");
