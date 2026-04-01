@@ -126,24 +126,25 @@ public class back{
     //-------------------------------------------------------------------------------------
 
     // ------------------------------------ add plants to database --------------------------
-    public String add(String symbol, String scientific_name, String common_name, String state, String light_requirement, String water_requirement, String plant_type, String description) throws SQLException {
+    public String add(String common_name, String sci_name, String family, String genus, String species_epithet, String care_level, String watering, String origin, String description) throws SQLException{
 
         if (is_admin == false){
             System.out.println("[log] login first");
             return "login as admin before adding plants";
         }
+
         PreparedStatement added = conn.prepareStatement(
-        "INSERT INTO plants (symbol, scientific_name, common_name, state, light_requirement, water_requirement, plant_type, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        "INSERT INTO plants (common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-
-        added.setString(1, symbol);
-        added.setString(2, scientific_name);
-        added.setString(3, common_name);
-        added.setString(4, state);
-        added.setString(5, light_requirement);
-        added.setString(6, water_requirement);
-        added.setString(7, plant_type);
-        added.setString(8, description);
+        added.setString(1, common_name);
+        added.setString(2, sci_name);
+        added.setString(3, family);
+        added.setString(4, genus);
+        added.setString(5, species_epithet);
+        added.setString(6, care_level);
+        added.setString(7, watering);
+        added.setString(8, origin);
+        added.setString(9, description);
         added.executeUpdate();
 
         System.out.println("[log] added "+ common_name+ " to the database");
