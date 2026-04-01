@@ -438,68 +438,36 @@
     </div>
 
     <!-- Filter panel (hidden by default) -->
-    <div class="filter-panel" id="filter-panel">
-        <div class="filter-panel-inner">
-            <div class="filter-group">
-                <label>Native Region</label>
-                <select id="filter-state">
-                    <option value="">All Regions</option>
-                    <option>Alabama</option><option>Alaska</option><option>Arizona</option>
-                    <option>Arkansas</option><option>California</option><option>Colorado</option>
-                    <option>Connecticut</option><option>Delaware</option><option>Florida</option>
-                    <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
-                    <option>Illinois</option><option>Indiana</option><option>Iowa</option>
-                    <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
-                    <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
-                    <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
-                    <option>Missouri</option><option>Montana</option><option>Nebraska</option>
-                    <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
-                    <option>New Mexico</option><option>New York</option><option>North Carolina</option>
-                    <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
-                    <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
-                    <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
-                    <option>Texas</option><option>Utah</option><option>Vermont</option>
-                    <option>Virginia</option><option>Washington</option><option>West Virginia</option>
-                    <option>Wisconsin</option><option>Wyoming</option>
-                </select>
-            </div>
+    <div class="filter-panel-inner">
+        <div class="filter-group">
+            <label>Care Level</label>
+            <select id="filter-care">
+                <option value="">Any Level</option>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>Moderate</option>
+                <option>High</option>
+                <option>Easy</option>
+            </select>
+        </div>
 
-            <div class="filter-group">
-                <label>Light Requirement</label>
-                <select id="filter-light">
-                    <option value="">Any Light</option>
-                    <option>Full Sun</option>
-                    <option>Partial Shade</option>
-                    <option>Full Shade</option>
-                </select>
-            </div>
+        <div class="filter-group">
+            <label>Watering</label>
+            <select id="filter-watering">
+                <option value="">Any</option>
+                <option>Minimum</option>
+                <option>Average</option>
+                <option>Frequent</option>
+            </select>
+        </div>
 
-            <div class="filter-group">
-                <label>Water Requirement</label>
-                <select id="filter-water">
-                    <option value="">Any Water</option>
-                    <option>Low</option>
-                    <option>Moderate</option>
-                    <option>High</option>
-                </select>
-            </div>
+        <div class="filter-group">
+            <label>Origin</label>
+            <input type="text" id="filter-origin" placeholder="e.g. Japan, China..." style="width:100%; border:1px solid #e8e4dc; background:var(--parchment); padding:9px 12px; font-family:inherit; font-size:0.85rem; color:var(--text); outline:none; border-radius:2px;">
+        </div>
 
-            <div class="filter-group">
-                <label>Plant Type</label>
-                <select id="filter-plant-type">
-                    <option value="">All Types</option>
-                    <option>Tree</option>
-                    <option>Shrub</option>
-                    <option>Herb</option>
-                    <option>Grass</option>
-                    <option>Fern</option>
-                    <option>Vine</option>
-                </select>
-            </div>
-
-            <div class="filter-actions">
-                <button class="filter-clear" onclick="clearFilters()">Clear Filters</button>
-            </div>
+        <div class="filter-actions">
+            <button class="filter-clear" onclick="clearFilters()">Clear Filters</button>
         </div>
     </div>
 
@@ -637,57 +605,34 @@
         <div class="admin-drawer-inner">
             <div class="admin-form-card">
                 <h3>Add Plant</h3>
-                <label>Symbol</label>
-                <input type="text" id="admin-symbol">
-                <label>Scientific Name</label>
-                <input type="text" id="admin-sci">
                 <label>Common Name</label>
                 <input type="text" id="admin-common">
-                <label>State</label>
-                <select id="admin-state">
-                    <option value="">— Select —</option>
-                    <option>Alabama</option><option>Alaska</option><option>Arizona</option>
-                    <option>Arkansas</option><option>California</option><option>Colorado</option>
-                    <option>Connecticut</option><option>Delaware</option><option>Florida</option>
-                    <option>Georgia</option><option>Hawaii</option><option>Idaho</option>
-                    <option>Illinois</option><option>Indiana</option><option>Iowa</option>
-                    <option>Kansas</option><option>Kentucky</option><option>Louisiana</option>
-                    <option>Maine</option><option>Maryland</option><option>Massachusetts</option>
-                    <option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
-                    <option>Missouri</option><option>Montana</option><option>Nebraska</option>
-                    <option>Nevada</option><option>New Hampshire</option><option>New Jersey</option>
-                    <option>New Mexico</option><option>New York</option><option>North Carolina</option>
-                    <option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
-                    <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option>
-                    <option>South Carolina</option><option>South Dakota</option><option>Tennessee</option>
-                    <option>Texas</option><option>Utah</option><option>Vermont</option>
-                    <option>Virginia</option><option>Washington</option><option>West Virginia</option>
-                    <option>Wisconsin</option><option>Wyoming</option>
-                </select>
-                <label>Light Requirement</label>
-                <select id="admin-light">
-                    <option value="">— Select —</option>
-                    <option>Full Sun</option>
-                    <option>Partial Shade</option>
-                    <option>Full Shade</option>
-                </select>
-                <label>Water Requirement</label>
-                <select id="admin-water">
+                <label>Scientific Name</label>
+                <input type="text" id="admin-sci">
+                <label>Family</label>
+                <input type="text" id="admin-family">
+                <label>Genus</label>
+                <input type="text" id="admin-genus">
+                <label>Species Epithet</label>
+                <input type="text" id="admin-species">
+                <label>Care Level</label>
+                <select id="admin-care">
                     <option value="">— Select —</option>
                     <option>Low</option>
+                    <option>Medium</option>
                     <option>Moderate</option>
                     <option>High</option>
+                    <option>Easy</option>
                 </select>
-                <label>Plant Type</label>
-                <select id="admin-type">
+                <label>Watering</label>
+                <select id="admin-watering">
                     <option value="">— Select —</option>
-                    <option>Tree</option>
-                    <option>Shrub</option>
-                    <option>Herb</option>
-                    <option>Grass</option>
-                    <option>Fern</option>
-                    <option>Vine</option>
+                    <option>Minimum</option>
+                    <option>Average</option>
+                    <option>Frequent</option>
                 </select>
+                <label>Origin</label>
+                <input type="text" id="admin-origin" placeholder="e.g. Japan, China...">
                 <label>Description</label>
                 <textarea id="admin-desc" placeholder="Brief description of the plant..." style="width:100%; border:1px solid #e8e4dc; background:var(--parchment); padding:9px 12px; font-family:inherit; font-size:0.85rem; color:var(--text); outline:none; box-sizing:border-box; margin-bottom:12px; resize:vertical; min-height:60px;"></textarea>
                 <button class="admin-submit-btn btn-add" onclick="adminAdd()">Add Plant</button>
@@ -758,219 +703,213 @@
 
 </main>
 
-<script>
-    // ── Auth ──────────────────────────────────────────────────────────────────
-    fetch('/get-user')
-        .then(res => res.ok ? res.text() : null)
-        .then(username => {
-            const authLink = document.getElementById('auth-link');
-            const welcomeMsg = document.getElementById('welcome-msg');
-            if (username && username.trim() !== "") {
-                welcomeMsg.innerText = `Welcome back, ${username}`;
-                authLink.innerText = "Logout";
-                authLink.href = "/logout";
-            }
-        })
-        .catch(() => {});
+// ── Auth ──────────────────────────────────────────────────────────────────
+fetch('/get-user')
+.then(res => res.ok ? res.text() : null)
+.then(username => {
+const authLink = document.getElementById('auth-link');
+const welcomeMsg = document.getElementById('welcome-msg');
+if (username && username.trim() !== "") {
+welcomeMsg.innerText = `Welcome back, ${username}`;
+authLink.innerText = "Logout";
+authLink.href = "/logout";
+}
+})
+.catch(() => {});
 
-    // ── Filter panel toggle ───────────────────────────────────────────────────
-    function toggleFilters() {
-        const panel = document.getElementById('filter-panel');
-        const btn   = document.getElementById('filter-toggle-btn');
-        panel.classList.toggle('open');
-        btn.textContent = panel.classList.contains('open') ? '✕ Close Filters' : '⚙ Filters';
-    }
-
-    function clearFilters() {
-        document.getElementById('filter-state').value     = '';
-        document.getElementById('filter-light').value     = '';
-        document.getElementById('filter-water').value     = '';
-        document.getElementById('filter-plant-type').value = '';
-        updateChips();
-    }
-
-    // Re-run search whenever a filter changes
-    ['filter-state','filter-light','filter-water','filter-plant-type'].forEach(id => {
-        document.getElementById(id).addEventListener('change', () => {
-            updateChips();
-            // Only auto-search if the user has already typed something or filters are set
-            if (document.getElementById('search-input').value || hasActiveFilters()) {
-                performSearch();
-            }
-        });
-    });
-
-    function hasActiveFilters() {
-        return ['filter-state','filter-light','filter-water','filter-plant-type']
-            .some(id => document.getElementById(id).value !== '');
-    }
-
-    // ── Active filter chips ───────────────────────────────────────────────────
-    const filterLabels = {
-        'filter-state':      'Region',
-        'filter-light':      'Light',
-        'filter-water':      'Water',
-        'filter-plant-type': 'Type'
-    };
-
-    function updateChips() {
-        const container = document.getElementById('active-filters');
-        container.innerHTML = '';
-        Object.entries(filterLabels).forEach(([id, label]) => {
-            const val = document.getElementById(id).value;
-            if (!val) return;
-            const chip = document.createElement('span');
-            chip.className = 'filter-chip';
-            chip.innerHTML = `${label}: ${val} <button onclick="clearFilter('${id}')" title="Remove">×</button>`;
-            container.appendChild(chip);
-        });
-    }
-
-    function clearFilter(id) {
-        document.getElementById(id).value = '';
-        updateChips();
-        if (document.getElementById('search-input').value || hasActiveFilters()) {
-            performSearch();
-        }
-    }
-
-    // ── Search ────────────────────────────────────────────────────────────────
-    function performSearch() {
-        const query     = document.getElementById('search-input').value;
-        const state     = document.getElementById('filter-state').value;
-        const light     = document.getElementById('filter-light').value;
-        const water     = document.getElementById('filter-water').value;
-        const plantType = document.getElementById('filter-plant-type').value;
-
-        // Require at least a name query or one filter to be active
-        if (!query && !state && !light && !water && !plantType) return;
-
-        const display = document.getElementById('plants-display');
-        const meta    = document.getElementById('results-meta');
-        display.innerHTML = "<div class='status-msg'>Consulting the botanical archives...</div>";
-        meta.textContent  = '';
-
-        // Build query string — only include filters that have values
-        const params = new URLSearchParams({ q: query });
-        if (state)     params.set('state',      state);
-        if (light)     params.set('light',      light);
-        if (water)     params.set('water',      water);
-        if (plantType) params.set('plant_type', plantType);
-
-        fetch(`/search-plants?${params.toString()}`)
-            .then(response => {
-                if (!response.ok) throw new Error("Connection lost");
-                return response.json();
-            })
-            .then(plants => {
-                display.innerHTML = '';
-
-                if (!plants || plants.length === 0) {
-                    meta.textContent = '';
-                    display.innerHTML = "<div class='status-msg'>No specimens found matching your criteria.</div>";
-                    return;
-                }
-
-                meta.textContent = `${plants.length} specimen${plants.length !== 1 ? 's' : ''} found`;
-
-                // plant[0]=symbol, [1]=scientific_name, [2]=common_name,
-                // [3]=state, [4]=light_requirement, [5]=water_requirement, [6]=plant_type
-                plants.forEach(plant => {
-                    const card = document.createElement('div');
-                    card.className = 'plant-card';
-
-                    // Build meta badges only for fields that exist
-                    let badges = '';
-                    if (plant[4]) badges += `<span class="meta-badge">☀ ${plant[4]}</span>`;
-                    if (plant[5]) badges += `<span class="meta-badge">💧 ${plant[5]}</span>`;
-                    if (plant[6]) badges += `<span class="meta-badge">🌿 ${plant[6]}</span>`;
-
-                    card.innerHTML = `
-                        <div class="image-wrapper">
-                            <div style="display:flex; height:100%; align-items:center; justify-content:center; background:#f4f1ec; color:#7b8d7e; font-size:3rem;">🌿</div>
-                        </div>
-                        <div class="plant-info">
-                            <h3>${plant[2] || "Unnamed Specimen"}</h3>
-                            <p class="scientific-name">${plant[1] || "Species unclassified"}</p>
-                            <span class="region-tag">Native to: ${plant[3] || "Various Regions"}</span>
-                            <div class="plant-meta">${badges}</div>
-                            ${plant[7] ? `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[7]}</p>` : ''}
-                            <button class="wishlist-action" onclick="alert('Added ${plant[2]} to collection!')">+ Add to Collection</button>
-                        </div>
-                    `;
-                    display.appendChild(card);
-                });
-            })
-            .catch(() => {
-                display.innerHTML = `<div class='status-msg' style='color:#a34a4a;'>Archive connection error. <br><small>Ensure back.java is active in IntelliJ</small></div>`;
-            });
-    }
-
-    // Enter key triggers search
-    document.getElementById("search-input").addEventListener("keypress", (e) => {
-        if (e.key === "Enter") performSearch();
-    });
-    // ── Admin Panel ───────────────────────────────────────────────────────
-    fetch('/is-admin')
-        .then(res => res.ok ? res.text() : null)
-        .then(val => {
-            if (val === 'true') {
-                document.getElementById('admin-panel').style.display = 'block';
-            }
-        })
-        .catch(() => {});
-
-    function toggleAdmin() {
-        const drawer = document.getElementById('admin-drawer');
-        const btn = document.getElementById('admin-toggle-btn');
-        drawer.classList.toggle('open');
-        btn.textContent = drawer.classList.contains('open') ? '✕ Close Admin Tools' : '🌿 Admin Tools';
-    }
-
-    function adminAdd() {
-    const form = new URLSearchParams();
-    form.set('symbol', document.getElementById('admin-symbol').value);
-    form.set('scientific_name', document.getElementById('admin-sci').value);
-    form.set('common_name', document.getElementById('admin-common').value);
-    form.set('state', document.getElementById('admin-state').value);
-    form.set('light_requirement', document.getElementById('admin-light').value);
-    form.set('water_requirement', document.getElementById('admin-water').value);
-    form.set('plant_type', document.getElementById('admin-type').value);
-    form.set('description', document.getElementById('admin-desc').value);
-
-    fetch('/add-plant', { method: 'POST', body: form, redirect: 'manual' })
-        .then(() => {
-            document.getElementById('admin-msg').textContent = '✓ Plant added successfully';
-            document.getElementById('admin-symbol').value = '';
-            document.getElementById('admin-sci').value = '';
-            document.getElementById('admin-common').value = '';
-            document.getElementById('admin-state').value = '';
-            document.getElementById('admin-light').value = '';
-            document.getElementById('admin-water').value = '';
-            document.getElementById('admin-type').value = '';
-            document.getElementById('admin-desc').value = '';
-            setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
-        })
-        .catch(() => {
-            document.getElementById('admin-msg').textContent = '✗ Failed to add plant';
-        });
+// ── Filter panel toggle ───────────────────────────────────────────────────
+function toggleFilters() {
+const panel = document.getElementById('filter-panel');
+const btn   = document.getElementById('filter-toggle-btn');
+panel.classList.toggle('open');
+btn.textContent = panel.classList.contains('open') ? '✕ Close Filters' : '⚙ Filters';
 }
 
-    function adminRemove() {
-        const form = new URLSearchParams();
-        form.set('common_name', document.getElementById('admin-remove-name').value);
+function clearFilters() {
+document.getElementById('filter-care').value = '';
+document.getElementById('filter-watering').value = '';
+document.getElementById('filter-origin').value = '';
+updateChips();
+}
 
-        fetch('/remove-plant', { method: 'POST', body: form, redirect: 'manual' })
-            .then(() => {
-                document.getElementById('admin-msg').textContent = '✓ Plant removed successfully';
-                document.getElementById('admin-remove-name').value = '';
-                setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
-            })
-            .catch(() => {
-                document.getElementById('admin-msg').textContent = '✗ Failed to remove plant';
-            });
-    }
-</script>
+['filter-care','filter-watering'].forEach(id => {
+document.getElementById(id).addEventListener('change', () => {
+updateChips();
+if (document.getElementById('search-input').value || hasActiveFilters()) {
+performSearch();
+}
+});
+});
 
-</body>
-</html>
+document.getElementById('filter-origin').addEventListener('keypress', (e) => {
+if (e.key === 'Enter') { updateChips(); performSearch(); }
+});
+
+function hasActiveFilters() {
+return document.getElementById('filter-care').value !== '' ||
+document.getElementById('filter-watering').value !== '' ||
+document.getElementById('filter-origin').value !== '';
+}
+
+// ── Active filter chips ───────────────────────────────────────────────────
+const filterLabels = {
+'filter-care':     'Care',
+'filter-watering': 'Watering',
+'filter-origin':   'Origin'
+};
+
+function updateChips() {
+const container = document.getElementById('active-filters');
+container.innerHTML = '';
+Object.entries(filterLabels).forEach(([id, label]) => {
+const val = document.getElementById(id).value;
+if (!val) return;
+const chip = document.createElement('span');
+chip.className = 'filter-chip';
+chip.innerHTML = `${label}: ${val} <button onclick="clearFilter('${id}')" title="Remove">×</button>`;
+container.appendChild(chip);
+});
+}
+
+function clearFilter(id) {
+document.getElementById(id).value = '';
+updateChips();
+if (document.getElementById('search-input').value || hasActiveFilters()) {
+performSearch();
+}
+}
+
+// ── Search ────────────────────────────────────────────────────────────────
+function performSearch() {
+const query     = document.getElementById('search-input').value;
+const careLevel = document.getElementById('filter-care').value;
+const watering  = document.getElementById('filter-watering').value;
+const origin    = document.getElementById('filter-origin').value;
+
+if (!query && !careLevel && !watering && !origin) return;
+
+const display = document.getElementById('plants-display');
+const meta    = document.getElementById('results-meta');
+display.innerHTML = "<div class='status-msg'>Consulting the botanical archives...</div>";
+meta.textContent  = '';
+
+const params = new URLSearchParams({ q: query });
+if (careLevel) params.set('care_level', careLevel);
+if (watering)  params.set('watering', watering);
+if (origin)    params.set('origin', origin);
+
+fetch(`/search-plants?${params.toString()}`)
+.then(response => {
+if (!response.ok) throw new Error("Connection lost");
+return response.json();
+})
+.then(plants => {
+display.innerHTML = '';
+
+if (!plants || plants.length === 0) {
+meta.textContent = '';
+display.innerHTML = "<div class='status-msg'>No specimens found matching your criteria.</div>";
+return;
+}
+
+meta.textContent = `${plants.length} specimen${plants.length !== 1 ? 's' : ''} found`;
+
+// plant[0]=id, [1]=common_name, [2]=sci_name, [3]=family, [4]=genus,
+// [5]=species_epithet, [6]=care_level, [7]=watering, [8]=origin, [9]=description
+plants.forEach(plant => {
+const card = document.createElement('div');
+card.className = 'plant-card';
+
+let badges = '';
+if (plant[6]) badges += `<span class="meta-badge">🌱 ${plant[6]}</span>`;
+if (plant[7]) badges += `<span class="meta-badge">💧 ${plant[7]}</span>`;
+if (plant[8]) badges += `<span class="meta-badge">🌍 ${plant[8]}</span>`;
+if (plant[3]) badges += `<span class="meta-badge">🧬 ${plant[3]}</span>`;
+
+card.innerHTML = `
+<div class="image-wrapper">
+    <div style="display:flex; height:100%; align-items:center; justify-content:center; background:#f4f1ec; color:#7b8d7e; font-size:3rem;">🌿</div>
+</div>
+<div class="plant-info">
+    <h3>${plant[1] || "Unnamed Specimen"}</h3>
+    <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
+    <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
+    <div class="plant-meta">${badges}</div>
+    ${plant[9] ? `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : ''}
+    <button class="wishlist-action" onclick="alert('Added ${plant[1]} to collection!')">+ Add to Collection</button>
+</div>
+`;
+display.appendChild(card);
+});
+})
+.catch(() => {
+display.innerHTML = `<div class='status-msg' style='color:#a34a4a;'>Archive connection error. <br><small>Ensure back.java is active</small></div>`;
+});
+}
+
+document.getElementById("search-input").addEventListener("keypress", (e) => {
+if (e.key === "Enter") performSearch();
+});
+
+// ── Admin Panel ───────────────────────────────────────────────────────
+fetch('/is-admin')
+.then(res => res.ok ? res.text() : null)
+.then(val => {
+if (val === 'true') {
+document.getElementById('admin-panel').style.display = 'block';
+}
+})
+.catch(() => {});
+
+function toggleAdmin() {
+const drawer = document.getElementById('admin-drawer');
+const btn = document.getElementById('admin-toggle-btn');
+drawer.classList.toggle('open');
+btn.textContent = drawer.classList.contains('open') ? '✕ Close Admin Tools' : '🌿 Admin Tools';
+}
+
+function adminAdd() {
+const form = new URLSearchParams();
+form.set('common_name', document.getElementById('admin-common').value);
+form.set('sci_name', document.getElementById('admin-sci').value);
+form.set('family', document.getElementById('admin-family').value);
+form.set('genus', document.getElementById('admin-genus').value);
+form.set('species_epithet', document.getElementById('admin-species').value);
+form.set('care_level', document.getElementById('admin-care').value);
+form.set('watering', document.getElementById('admin-watering').value);
+form.set('origin', document.getElementById('admin-origin').value);
+form.set('description', document.getElementById('admin-desc').value);
+
+fetch('/add-plant', { method: 'POST', body: form, redirect: 'manual' })
+.then(() => {
+document.getElementById('admin-msg').textContent = '✓ Plant added successfully';
+document.getElementById('admin-common').value = '';
+document.getElementById('admin-sci').value = '';
+document.getElementById('admin-family').value = '';
+document.getElementById('admin-genus').value = '';
+document.getElementById('admin-species').value = '';
+document.getElementById('admin-care').value = '';
+document.getElementById('admin-watering').value = '';
+document.getElementById('admin-origin').value = '';
+document.getElementById('admin-desc').value = '';
+setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
+})
+.catch(() => {
+document.getElementById('admin-msg').textContent = '✗ Failed to add plant';
+});
+}
+
+function adminRemove() {
+const form = new URLSearchParams();
+form.set('common_name', document.getElementById('admin-remove-name').value);
+
+fetch('/remove-plant', { method: 'POST', body: form, redirect: 'manual' })
+.then(() => {
+document.getElementById('admin-msg').textContent = '✓ Plant removed successfully';
+document.getElementById('admin-remove-name').value = '';
+setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
+})
+.catch(() => {
+document.getElementById('admin-msg').textContent = '✗ Failed to remove plant';
+});
+}
