@@ -160,46 +160,45 @@ public class back{
     // -------------------- searchWithFilters ----------------------------------------
     // searches by name (partial match) then narrows by any of the following filters: 
     // state, light_requirement, water_requirement, plant_type
-    public List<String[]> searchWithFilters(String name, String state, String light, String water, String plantType) throws SQLException {
+    public List<String[]> searchWithFilters(String name, String careLevel, String watering, String origin) throws SQLException {
         List<String[]> results = new ArrayList<>();
- 
-        // Build the query dynamically based on which filters are active
+
         StringBuilder sql = new StringBuilder(
-                "SELECT symbol, scientific_name, common_name, state, light_requirement, water_requirement, plant_type, description " +            "FROM plants WHERE LOWER(common_name) LIKE LOWER(?)"
+                "SELECT id, common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description " +
+                        "FROM plants WHERE LOWER(common_name) LIKE LOWER(?)"
         );
- 
-        if (state != null && !state.isEmpty())     sql.append(" AND LOWER(state) = LOWER(?)");
-        if (light != null && !light.isEmpty())     sql.append(" AND LOWER(light_requirement) = LOWER(?)");
-        if (water != null && !water.isEmpty())     sql.append(" AND LOWER(water_requirement) = LOWER(?)");
-        if (plantType != null && !plantType.isEmpty()) sql.append(" AND LOWER(plant_type) = LOWER(?)");
- 
+
+        if (careLevel != null && !careLevel.isEmpty()) sql.append(" AND LOWER(care_level) = LOWER(?)");
+        if (watering != null && !watering.isEmpty())   sql.append(" AND LOWER(watering) = LOWER(?)");
+        if (origin != null && !origin.isEmpty())        sql.append(" AND LOWER(origin) LIKE LOWER(?)");
+
         try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             int idx = 1;
             stmt.setString(idx++, "%" + (name != null ? name : "") + "%");
-            if (state != null && !state.isEmpty())     stmt.setString(idx++, state);
-            if (light != null && !light.isEmpty())     stmt.setString(idx++, light);
-            if (water != null && !water.isEmpty())     stmt.setString(idx++, water);
-            if (plantType != null && !plantType.isEmpty()) stmt.setString(idx++, plantType);
- 
+            if (careLevel != null && !careLevel.isEmpty()) stmt.setString(idx++, careLevel);
+            if (watering != null && !watering.isEmpty())   stmt.setString(idx++, watering);
+            if (origin != null && !origin.isEmpty())        stmt.setString(idx++, "%" + origin + "%");
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     results.add(new String[]{
-                        rs.getString("symbol"),
-                        rs.getString("scientific_name"),
-                        rs.getString("common_name"),
-                        rs.getString("state"),
-                        rs.getString("light_requirement"),
-                        rs.getString("water_requirement"),
-                            rs.getString("plant_type"),
+                            String.valueOf(rs.getInt("id")),
+                            rs.getString("common_name"),
+                            rs.getString("sci_name"),
+                            rs.getString("family"),
+                            rs.getString("genus"),
+                            rs.getString("species_epithet"),
+                            rs.getString("care_level"),
+                            rs.getString("watering"),
+                            rs.getString("origin"),
                             rs.getString("description")
-
                     });
                 }
             }
         } catch (SQLException e) {
             System.out.println("Error in searchWithFilters: " + e.getMessage());
         }
- 
+
         return results;
     }
 
@@ -264,17 +263,16 @@ public class back{
             ctx.result(result);        });
         server.get("/search-plants", ctx -> {
             String query     = ctx.queryParam("q");
-            String state     = ctx.queryParam("state");
-            String light     = ctx.queryParam("light");
-            String water     = ctx.queryParam("water");
-            String plantType = ctx.queryParam("plant_type");
- 
+            String careLevel = ctx.queryParam("care_level");
+            String watering  = ctx.queryParam("watering");
+            String origin    = ctx.queryParam("origin");
+
             System.out.println(">>> SEARCH — name: " + query
-                + " | state: " + state + " | light: " + light
-                + " | water: " + water + " | type: " + plantType);
- 
-            List<String[]> results = appLogic.searchWithFilters(query, state, light, water, plantType);
- 
+                    + " | care: " + careLevel + " | watering: " + watering
+                    + " | origin: " + origin);
+
+            List<String[]> results = appLogic.searchWithFilters(query, careLevel, watering, origin);
+
             StringBuilder json = new StringBuilder("[");
             for (int i = 0; i < results.size(); i++) {
                 String[] p = results.get(i);
@@ -288,11 +286,10 @@ public class back{
                 if (i < results.size() - 1) json.append(",");
             }
             json.append("]");
- 
+
             ctx.contentType("application/json");
             ctx.result(json.toString());
         });
-
         //
 
         server.get("/get-user", ctx -> {
