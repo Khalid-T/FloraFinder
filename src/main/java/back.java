@@ -164,7 +164,7 @@ public class back{
         List<String[]> results = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-                "SELECT id, common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description " +
+                "SELECT id, common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description, image_url " +
                         "FROM plants WHERE LOWER(common_name) LIKE LOWER(?)"
         );
 
@@ -191,7 +191,8 @@ public class back{
                             rs.getString("care_level"),
                             rs.getString("watering"),
                             rs.getString("origin"),
-                            rs.getString("description")
+                            rs.getString("description"),
+                            rs.getString("image_url")
                     });
                 }
             }

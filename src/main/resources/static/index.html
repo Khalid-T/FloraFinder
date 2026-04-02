@@ -828,9 +828,11 @@ if (plant[7]) badges += `<span class="meta-badge">💧 ${plant[7]}</span>`;
 if (plant[8]) badges += `<span class="meta-badge">🌍 ${plant[8]}</span>`;
 if (plant[3]) badges += `<span class="meta-badge">🧬 ${plant[3]}</span>`;
 
+const imgFile = plant[10] || '';
+
 card.innerHTML = `
 <div class="image-wrapper">
-    <div style="display:flex; height:100%; align-items:center; justify-content:center; background:#f4f1ec; color:#7b8d7e; font-size:3rem;">🌿</div>
+<img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
 </div>
 <div class="plant-info">
     <h3>${plant[1] || "Unnamed Specimen"}</h3>
