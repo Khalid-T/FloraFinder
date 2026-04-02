@@ -123,6 +123,22 @@ public class back{
         removed.close();
         return "Removed " +entry+" form the database";
     }
+    public String updateDescription(String commonName, String newDescription) throws SQLException {
+        if (is_admin == false) {
+            return "login as admin first";
+        }
+        PreparedStatement stmt = conn.prepareStatement(
+                "UPDATE plants SET description = ? WHERE common_name = ?");
+        stmt.setString(1, newDescription);
+        stmt.setString(2, commonName);
+        int updated = stmt.executeUpdate();
+        stmt.close();
+        if (updated > 0) {
+            return "Description updated for " + commonName;
+        } else {
+            return "Plant not found: " + commonName;
+        }
+    }
     //-------------------------------------------------------------------------------------
 
     // ------------------------------------ add plants to database --------------------------
@@ -262,6 +278,12 @@ public class back{
             String result = appLogic.remove(commonName);
 
             ctx.result(result);        });
+        server.post("/update-description", ctx -> {
+            String commonName = ctx.formParam("common_name");
+            String description = ctx.formParam("description");
+            String result = appLogic.updateDescription(commonName, description);
+            ctx.result(result);
+        });
         server.get("/search-plants", ctx -> {
             String query     = ctx.queryParam("q");
             String careLevel = ctx.queryParam("care_level");

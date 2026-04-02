@@ -703,7 +703,9 @@ fetch('/featured-plants')
         `;
         display.appendChild(card);
     });
+
 })
+
 .catch(() => {});
 
 // ── Filter panel toggle ───────────────────────────────────────────────────
@@ -826,11 +828,16 @@ card.innerHTML = `
     <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
     <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
     <div class="plant-meta">${badges}</div>
-    ${plant[9] ? `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : ''}
-    <button class="wishlist-action" onclick="alert('Added ${plant[1]} to collection!')">+ Add to Collection</button>
+${plant[9] ? `<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : '<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>'}    <button class="wishlist-action" onclick="alert('Added ${plant[1]} to collection!')">+ Add to Collection</button>
+<button class="edit-desc-btn" style="display:none; background:none; border:1px solid var(--gold); color:var(--forest); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; padding:4px 12px; cursor:pointer; margin-bottom:8px;" onclick="editDescription('${plant[1]}', this)">Edit Description</button>
 </div>
 `;
+// Show edit buttons if admin
 display.appendChild(card);
+});
+// Show edit buttons if admin
+fetch('/is-admin').then(r => r.ok ? r.text() : '').then(v => {
+    if (v === 'true') document.querySelectorAll('.edit-desc-btn').forEach(b => b.style.display = 'inline-block');
 });
 })
 .catch(() => {
@@ -847,7 +854,12 @@ fetch('/is-admin')
 .then(res => res.ok ? res.text() : null)
 .then(val => {
 if (val === 'true') {
+
 document.getElementById('admin-panel').style.display = 'block';
+// Show edit buttons on all cards
+setTimeout(() => {
+    document.querySelectorAll('.edit-desc-btn').forEach(btn => btn.style.display = 'inline-block');
+}, 500);
 }
 })
 .catch(() => {});
@@ -889,7 +901,44 @@ setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
 document.getElementById('admin-msg').textContent = '✗ Failed to add plant';
 });
 }
+function editDescription(commonName, btn) {
+    const card = btn.closest('.plant-info');
+    const descP = card.querySelector('.plant-desc');
+    const oldText = descP.textContent;
 
+    descP.innerHTML = `<textarea style="width:100%; min-height:80px; border:1px solid #e8e4dc; background:var(--parchment); padding:8px; font-family:inherit; font-size:0.8rem; color:var(--text); resize:vertical;">${oldText}</textarea>
+    <div style="margin-top:6px; display:flex; gap:8px; justify-content:center;">
+        <button onclick="saveDescription('${commonName}', this)" style="background:var(--forest); color:white; border:none; padding:5px 14px; font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">Save</button>
+        <button onclick="cancelEdit(this, '${oldText}')" style="background:none; border:1px solid #ddd; color:var(--sage); padding:5px 14px; font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">Cancel</button>
+    </div>`;
+    btn.style.display = 'none';
+}
+
+function saveDescription(commonName, btn) {
+    const card = btn.closest('.plant-info');
+    const textarea = card.querySelector('textarea');
+    const newDesc = textarea.value;
+
+    const form = new URLSearchParams();
+    form.set('common_name', commonName);
+    form.set('description', newDesc);
+
+    fetch('/update-description', { method: 'POST', body: form })
+        .then(res => res.text())
+        .then(result => {
+            const descP = card.querySelector('.plant-desc');
+            descP.textContent = newDesc;
+            descP.style.fontStyle = 'normal';
+            card.querySelector('.edit-desc-btn').style.display = 'inline-block';
+        });
+}
+
+function cancelEdit(btn, oldText) {
+    const card = btn.closest('.plant-info');
+    const descP = card.querySelector('.plant-desc');
+    descP.textContent = oldText;
+    card.querySelector('.edit-desc-btn').style.display = 'inline-block';
+}
 function adminRemove() {
 const form = new URLSearchParams();
 form.set('common_name', document.getElementById('admin-remove-name').value);
