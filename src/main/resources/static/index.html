@@ -438,6 +438,7 @@
     </div>
 
     <!-- Filter panel (hidden by default) -->
+    <div class="filter-panel" id="filter-panel">
     <div class="filter-panel-inner">
         <div class="filter-group">
             <label>Care Level</label>
@@ -470,7 +471,7 @@
             <button class="filter-clear" onclick="clearFilters()">Clear Filters</button>
         </div>
     </div>
-
+    </div>
     <!-- Active filter chips (shown below the panel) -->
     <div class="active-filters" id="active-filters"></div>
 </section>
@@ -702,6 +703,7 @@
     </div>
 
 </main>
+<script>
 
 // ── Auth ──────────────────────────────────────────────────────────────────
 fetch('/get-user')
@@ -912,4 +914,7 @@ setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
 .catch(() => {
 document.getElementById('admin-msg').textContent = '✗ Failed to remove plant';
 });
-}
+}</script>
+
+</body>
+</html>
