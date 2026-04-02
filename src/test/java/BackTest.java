@@ -113,7 +113,7 @@ public class BackTest {
         app.login("admin","pass");
         app.sign_up("g","g",0);
         String test = app.removeusr("g");
-        assertEquals("removed", test);
+        assertEquals("g has been removed successfully.", test);
     }
                 
      

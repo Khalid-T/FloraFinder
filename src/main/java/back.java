@@ -54,7 +54,7 @@ public class back{
          removed.executeUpdate();
 
          System.out.println("[log]  User Removed "+ username);
-         return "removed";
+         return username + " has been removed successfully.";
         
     }
        
