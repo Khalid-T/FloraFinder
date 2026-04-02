@@ -653,54 +653,6 @@
 
 <main id="plants-display" class="catalogue-grid">
 
-    <!-- Default static cards shown before any search -->
-    <div class="plant-card">
-        <div class="image-wrapper">
-            <img src="./Images/134097934838567213.jpg" alt="Greenland Moss">
-        </div>
-        <div class="plant-info">
-            <h3>Greenland Moss</h3>
-            <p class="scientific-name">Bryophyta groenlandica</p>
-            <span class="region-tag">Region: Arctic Tundra</span>
-            <button class="wishlist-action" onclick="alert('Added Greenland Moss to Collection!')">+ Add to Collection</button>
-        </div>
-    </div>
-
-    <div class="plant-card">
-        <div class="image-wrapper">
-            <img src="./Images/photo3.jpg" alt="Monstera Adansonii">
-        </div>
-        <div class="plant-info">
-            <h3>Monstera Adansonii</h3>
-            <p class="scientific-name">Monstera adansonii</p>
-            <span class="region-tag">Region: Central America</span>
-            <button class="wishlist-action" onclick="alert('Added Monstera Adansonii to Collection!')">+ Add to Collection</button>
-        </div>
-    </div>
-
-    <div class="plant-card">
-        <div class="image-wrapper">
-            <img src="./Images/snake-plant.jpg" alt="Snake Plant">
-        </div>
-        <div class="plant-info">
-            <h3>Snake Plant</h3>
-            <p class="scientific-name">Dracaena trifasciata</p>
-            <span class="region-tag">Region: West Africa</span>
-            <button class="wishlist-action" onclick="alert('Added Snake Plant to Collection!')">+ Add to Collection</button>
-        </div>
-    </div>
-
-    <div class="plant-card">
-        <div class="image-wrapper">
-            <img src="./Images/peace-lily.jpg" alt="Peace Lily">
-        </div>
-        <div class="plant-info">
-            <h3>Peace Lily</h3>
-            <p class="scientific-name">Spathiphyllum</p>
-            <span class="region-tag">Region: Southeast Asia</span>
-            <button class="wishlist-action" onclick="alert('Added Peace Lily to Collection!')">+ Add to Collection</button>
-        </div>
-    </div>
 
 </main>
 <script>
@@ -716,6 +668,41 @@ welcomeMsg.innerText = `Welcome back, ${username}`;
 authLink.innerText = "Logout";
 authLink.href = "/logout";
 }
+})
+.catch(() => {});
+// ── Load featured plants on page load ─────────────────────────────────
+fetch('/featured-plants')
+.then(res => res.ok ? res.json() : [])
+.then(plants => {
+    const display = document.getElementById('plants-display');
+    if (!plants || plants.length === 0) return;
+
+    plants.forEach(plant => {
+        const card = document.createElement('div');
+        card.className = 'plant-card';
+
+        let badges = '';
+        if (plant[6]) badges += `<span class="meta-badge">🌱 ${plant[6]}</span>`;
+        if (plant[7]) badges += `<span class="meta-badge">💧 ${plant[7]}</span>`;
+        if (plant[8]) badges += `<span class="meta-badge">🌍 ${plant[8]}</span>`;
+        if (plant[3]) badges += `<span class="meta-badge">🧬 ${plant[3]}</span>`;
+
+        const imgFile = plant[10] || '';
+
+        card.innerHTML = `
+        <div class="image-wrapper">
+            <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
+        </div>
+        <div class="plant-info">
+            <h3>${plant[1] || "Unnamed Specimen"}</h3>
+            <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
+            <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
+            <div class="plant-meta">${badges}</div>
+            <button class="wishlist-action" onclick="alert('Added ${plant[1]} to collection!')">+ Add to Collection</button>
+        </div>
+        `;
+        display.appendChild(card);
+    });
 })
 .catch(() => {});
 

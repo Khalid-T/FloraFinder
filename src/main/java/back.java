@@ -292,7 +292,29 @@ public class back{
             ctx.result(json.toString());
         });
         //
+        server.get("/featured-plants", ctx -> {
+            List<String[]> results = appLogic.searchWithFilters("", null, null, null);
+            // Pick 10 random plants
+            java.util.Collections.shuffle(results);
+            List<String[]> featured = results.subList(0, Math.min(9, results.size()));
 
+            StringBuilder json = new StringBuilder("[");
+            for (int i = 0; i < featured.size(); i++) {
+                String[] p = featured.get(i);
+                json.append("[");
+                for (int j = 0; j < p.length; j++) {
+                    String cleaned = (p[j] == null) ? "" : p[j].replace("\\", "\\\\").replace("\"", "\\\"");
+                    json.append("\"").append(cleaned).append("\"");
+                    if (j < p.length - 1) json.append(",");
+                }
+                json.append("]");
+                if (i < featured.size() - 1) json.append(",");
+            }
+            json.append("]");
+
+            ctx.contentType("application/json");
+            ctx.result(json.toString());
+        });
         server.get("/get-user", ctx -> {
             String user = ctx.sessionAttribute("currentUser");
             if (user != null) {
