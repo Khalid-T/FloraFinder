@@ -106,7 +106,17 @@ public class BackTest {
             app.sign_up("Marco", "456", 0);
         });
     }
- 
+    // ----------------------- remove users -----------------------
+    @Test
+    void testremoveusr() throws SQLException{
+        app.sign_up("admin","pass",1);
+        app.login("admin","pass");
+        app.sign_up("g","g",0);
+        String test = app.removeusr("g");
+        assertEquals("removed", test);
+    }
+                
+     
     //--------------------- LOGOUT TEST ----------------------
     @Test
     void testLogoutResetsAdmin() throws SQLException {
@@ -154,7 +164,7 @@ public class BackTest {
         app.add("Rose", "Sci", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "A common garden rose.");        String result = app.remove("Rose");
         assertTrue(result.contains("Removed"));
     }
- 
+                
     //--------------------- SEARCH TESTS ----------------------
  
 

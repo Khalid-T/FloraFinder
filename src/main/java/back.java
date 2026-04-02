@@ -41,7 +41,23 @@ public class back{
       System.out.println("[log] Password for "+ username + " has been updated");
       return "Password updated!";
   }
-    
+
+    public String removeusr(String username)throws SQLException{
+          if (is_admin == false){
+             System.out.println("[log] login first");
+            return "login as an admin first";
+        }
+         PreparedStatement removed = conn.prepareStatement(
+                    "DELETE FROM  users Where username = ?" );
+
+         removed.setString(1,username);
+         removed.executeUpdate();
+
+         System.out.println("[log]  User Removed "+ username);
+         return "removed";
+        
+    }
+       
    //------------------------------------login --------------------------------------------
     public String sign_up(String username, String password, int  admin) throws SQLException {
 
