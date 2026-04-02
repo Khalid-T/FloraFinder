@@ -25,15 +25,17 @@ public class BackTest {
                 // Updated schema with new filter columns
                 stmt.execute("""
                     CREATE TABLE plants(
-                        symbol TEXT,
-                        scientific_name TEXT,
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                         common_name TEXT,
-                        state TEXT,
-                        light_requirement TEXT,
-                        water_requirement TEXT,
-                        plant_type TEXT,
-                        description TEXT
-
+                        sci_name TEXT,
+                        family TEXT,
+                        genus TEXT,
+                        species_epithet TEXT,
+                        care_level TEXT,
+                        watering TEXT,
+                        origin TEXT,
+                        description TEXT,
+                        image_url TEXT
                     );
                 """);
                 stmt.close();
@@ -117,18 +119,19 @@ public class BackTest {
     //--------------------- ADD PLANT TESTS -------------------
     @Test
     void testAddWithoutAdmin() throws SQLException {
-        String result = app.add("SYM", "Sci", "Rose", "CA", "Full Sun", "Moderate", "Herb", "A common garden rose.");
+        String result = app.add("Rose", "Rosa", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "desc");
         assertEquals("login as admin before adding plants", result);
     }
- 
+
     @Test
     void testAddWithAdmin() throws SQLException {
         app.sign_up("admin", "pass", 1);
         app.login("admin", "pass");
-        String result = app.add("SYM", "Sci", "Rose", "CA", "Full Sun", "Moderate", "Herb", "A common garden rose.");
+        
+        String result = app.add("Rose", "Rosa", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "desc");
+        
         assertTrue(result.contains("added Rose"));
-    }
- 
+    } 
     //--------------------- REMOVE PLANT TESTS ----------------
     @Test
     void testRemoveWithoutAdmin() throws SQLException {
@@ -148,280 +151,295 @@ public class BackTest {
     void testRemoveWithAdmin() throws SQLException {
         app.sign_up("admin", "pass", 1);
         app.login("admin", "pass");
-        app.add("SYM", "Sci", "Rose", "CA", "Full Sun", "Moderate", "Herb", "A common garden rose.");
-        String result = app.remove("Rose");
+        app.add("Rose", "Sci", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "A common garden rose.");        String result = app.remove("Rose");
         assertTrue(result.contains("Removed"));
     }
  
     //--------------------- SEARCH TESTS ----------------------
  
-    // Seed helper — now includes light, water, and plant_type
+
+  // Seed helper
     private void seedSearchData() throws SQLException {
-        String sql = "INSERT INTO plants (symbol, scientific_name, common_name, state, light_requirement, water_requirement, plant_type) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+            INSERT INTO plants
+            (common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """;
         try (java.sql.PreparedStatement stmt = app.conn.prepareStatement(sql)) {
- 
-            // Alabama — Full Sun, Low, Herb
-            stmt.setString(1, "ABTH");
-            stmt.setString(2, "Abutilon theophrasti Medik.");
-            stmt.setString(3, "VELVETLEAF");
-            stmt.setString(4, "Alabama");
-            stmt.setString(5, "Full Sun");
-            stmt.setString(6, "Low");
-            stmt.setString(7, "Herb");
-            stmt.addBatch();
- 
-            // Alabama — Partial Shade, Moderate, Tree
-            stmt.setString(1, "ACRU");
-            stmt.setString(2, "Acer rubrum L.");
-            stmt.setString(3, "RED MAPLE");
-            stmt.setString(4, "Alabama");
-            stmt.setString(5, "Partial Shade");
+
+            // 1. RED MAPLE — Sapindaceae, Moderate, Moderate, North America
+            stmt.setString(1, "RED MAPLE");
+            stmt.setString(2, "Acer rubrum");
+            stmt.setString(3, "Sapindaceae");
+            stmt.setString(4, "Acer");
+            stmt.setString(5, "rubrum");
             stmt.setString(6, "Moderate");
-            stmt.setString(7, "Tree");
+            stmt.setString(7, "Moderate");
+            stmt.setString(8, "North America");
+            stmt.setString(9, "A common maple tree.");
             stmt.addBatch();
- 
-            // Arizona — Full Sun, Moderate, Grass
-            stmt.setString(1, "ABAN");
-            stmt.setString(2, "Abronia angustifolia Greene");
-            stmt.setString(3, "purple sand-verbena");
-            stmt.setString(4, "Arizona");
-            stmt.setString(5, "Full Sun");
-            stmt.setString(6, "Moderate");
-            stmt.setString(7, "Grass");
+
+            // 2. VELVETLEAF — Malvaceae, Easy, Low, North America
+            stmt.setString(1, "VELVETLEAF");
+            stmt.setString(2, "Abutilon theophrasti");
+            stmt.setString(3, "Malvaceae");
+            stmt.setString(4, "Abutilon");
+            stmt.setString(5, "theophrasti");
+            stmt.setString(6, "Easy");
+            stmt.setString(7, "Low");
+            stmt.setString(8, "North America");
+            stmt.setString(9, "A broadleaf weed.");
             stmt.addBatch();
- 
-            // Nevada — Full Shade, High, Tree
-            stmt.setString(1, "ABBA");
-            stmt.setString(2, "Abies balsamea (L.) Mill.");
-            stmt.setString(3, "balsam fir");
-            stmt.setString(4, "Nevada");
-            stmt.setString(5, "Full Shade");
-            stmt.setString(6, "High");
-            stmt.setString(7, "Tree");
+
+            // 3. balsam fir — Pinaceae, Hard, High, Europe
+            stmt.setString(1, "balsam fir");
+            stmt.setString(2, "Abies balsamea");
+            stmt.setString(3, "Pinaceae");
+            stmt.setString(4, "Abies");
+            stmt.setString(5, "balsamea");
+            stmt.setString(6, "Hard");
+            stmt.setString(7, "High");
+            stmt.setString(8, "Europe");
+            stmt.setString(9, "An evergreen conifer.");
             stmt.addBatch();
- 
-            // Nevada — Full Sun, Low, Herb  (second nevada entry to test multi-result filters)
-            stmt.setString(1, "ARDI");
-            stmt.setString(2, "Aristida divaricata Humb.");
-            stmt.setString(3, "poverty threeawn");
-            stmt.setString(4, "Nevada");
-            stmt.setString(5, "Full Sun");
-            stmt.setString(6, "Low");
-            stmt.setString(7, "Herb");
+
+            // 4. purple sand-verbena — Nyctaginaceae, Easy, Moderate, South America
+            stmt.setString(1, "purple sand-verbena");
+            stmt.setString(2, "Abronia umbellata");
+            stmt.setString(3, "Nyctaginaceae");
+            stmt.setString(4, "Abronia");
+            stmt.setString(5, "umbellata");
+            stmt.setString(6, "Easy");
+            stmt.setString(7, "Moderate");
+            stmt.setString(8, "South America");
+            stmt.setString(9, "A flowering coastal plant.");
             stmt.addBatch();
- 
+
+            // 5. poverty threeawn — Poaceae, Easy, Low, South America
+            stmt.setString(1, "poverty threeawn");
+            stmt.setString(2, "Aristida dichotoma");
+            stmt.setString(3, "Poaceae");
+            stmt.setString(4, "Aristida");
+            stmt.setString(5, "dichotoma");
+            stmt.setString(6, "Easy");
+            stmt.setString(7, "Low");
+            stmt.setString(8, "South America");
+            stmt.setString(9, "A native grass species.");
+            stmt.addBatch();
+
             stmt.executeBatch();
         }
     }
- 
+
     // --- Name search ---
- 
+
     @Test
     void testSearchByNameFound() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("RED MAPLE", null, null, null, null);
+        List<String[]> results = app.searchWithFilters("RED MAPLE", null, null, null);
         assertFalse(results.isEmpty());
-        assertEquals("ACRU", results.get(0)[0]);
+        assertEquals("RED MAPLE", results.get(0)[1]);
     }
- 
+
     @Test
     void testSearchByNamePartialMatch() throws SQLException {
         seedSearchData();
-        // "maple" should match "RED MAPLE"
-        List<String[]> results = app.searchWithFilters("maple", null, null, null, null);
+        List<String[]> results = app.searchWithFilters("maple", null, null, null);
         assertFalse(results.isEmpty());
-        assertEquals("RED MAPLE", results.get(0)[2]);
+        assertEquals("RED MAPLE", results.get(0)[1]);
     }
- 
+
     @Test
     void testSearchByNameNoMatch() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("dragon plant", null, null, null, null);
+        List<String[]> results = app.searchWithFilters("dragon plant", null, null, null);
         assertTrue(results.isEmpty());
     }
- 
+
     @Test
     void testSearchByNameCaseInsensitive() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("velvetleaf", null, null, null, null);
+        List<String[]> results = app.searchWithFilters("velvetleaf", null, null, null);
         assertFalse(results.isEmpty(), "Name search should be case-insensitive");
     }
- 
+
     @Test
     void testSearchEmptyNameReturnsAll() throws SQLException {
         seedSearchData();
-        // Empty name with no filters should return everything
-        List<String[]> results = app.searchWithFilters("", null, null, null, null);
+        List<String[]> results = app.searchWithFilters("", null, null, null);
         assertEquals(5, results.size());
     }
- 
-    // --- State filter ---
- 
+
+    // --- Family filter (tested via name since back.java has no family param) ---
+
     @Test
-    void testFilterByStateAlabama() throws SQLException {
+    void testFilterByFamilyMalvaceae() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", "Alabama", null, null, null);
-        assertEquals(2, results.size(), "Alabama should return 2 seeded results");
+        List<String[]> results = app.searchWithFilters("VELVETLEAF", null, null, null);
+        assertEquals(1, results.size());
+        assertEquals("VELVETLEAF", results.get(0)[1]);
     }
- 
+
     @Test
-    void testFilterByStateNevada() throws SQLException {
+    void testFilterByFamilySapindaceae() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", "Nevada", null, null, null);
-        assertEquals(2, results.size());
+        List<String[]> results = app.searchWithFilters("RED MAPLE", null, null, null);
+        assertEquals(1, results.size());
+        assertEquals("RED MAPLE", results.get(0)[1]);
     }
- 
+
     @Test
-    void testFilterByStateNoResults() throws SQLException {
+    void testFilterByFamilyNoResults() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", "California", null, null, null);
-        assertTrue(results.isEmpty(), "Should be empty for a state not in the seeded data");
+        List<String[]> results = app.searchWithFilters("Cactaceae", null, null, null);
+        assertTrue(results.isEmpty());
     }
- 
+
     @Test
-    void testFilterByStateCaseInsensitive() throws SQLException {
+    void testFilterByFamilyCaseInsensitive() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", "arizona", null, null, null);
-        assertFalse(results.isEmpty(), "State filter should be case-insensitive");
+        List<String[]> results = app.searchWithFilters("velvetleaf", null, null, null);
+        assertFalse(results.isEmpty(), "Name search should be case-insensitive");
     }
- 
-    // --- Light filter ---
- 
+
+    // --- Care level filter ---
+
     @Test
-    void testFilterByLightFullSun() throws SQLException {
+    void testFilterByCareLevelEasy() throws SQLException {
         seedSearchData();
-        // VELVETLEAF (Alabama), purple sand-verbena (Arizona), poverty threeawn (Nevada)
-        List<String[]> results = app.searchWithFilters("", null, "Full Sun", null, null);
+        // VELVETLEAF, purple sand-verbena, poverty threeawn
+        List<String[]> results = app.searchWithFilters("", "Easy", null, null);
         assertEquals(3, results.size());
     }
- 
+
     @Test
-    void testFilterByLightFullShade() throws SQLException {
+    void testFilterByCareLevelHard() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", null, "Full Shade", null, null);
+        List<String[]> results = app.searchWithFilters("", "Hard", null, null);
         assertEquals(1, results.size());
-        assertEquals("balsam fir", results.get(0)[2]);
+        assertEquals("balsam fir", results.get(0)[1]);
     }
- 
+
     @Test
-    void testFilterByLightNoResults() throws SQLException {
+    void testFilterByCareLevelNoResults() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", null, "Underwater", null, null);
+        List<String[]> results = app.searchWithFilters("", "Expert", null, null);
         assertTrue(results.isEmpty());
     }
- 
-    // --- Water filter ---
- 
+
+    // --- Watering filter ---
+
     @Test
-    void testFilterByWaterLow() throws SQLException {
+    void testFilterByWateringLow() throws SQLException {
         seedSearchData();
-        // VELVETLEAF (Alabama) and poverty threeawn (Nevada) are both Low
-        List<String[]> results = app.searchWithFilters("", null, null, "Low", null);
+        // VELVETLEAF and poverty threeawn
+        List<String[]> results = app.searchWithFilters("", null, "Low", null);
         assertEquals(2, results.size());
     }
- 
+
     @Test
-    void testFilterByWaterHigh() throws SQLException {
+    void testFilterByWateringHigh() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", null, null, "High", null);
+        List<String[]> results = app.searchWithFilters("", null, "High", null);
         assertEquals(1, results.size());
-        assertEquals("balsam fir", results.get(0)[2]);
+        assertEquals("balsam fir", results.get(0)[1]);
     }
- 
-    // --- Plant type filter ---
- 
+
+    // --- Origin filter ---
+
     @Test
-    void testFilterByPlantTypeTree() throws SQLException {
+    void testFilterByOriginNorthAmerica() throws SQLException {
         seedSearchData();
-        // RED MAPLE (Alabama) and balsam fir (Nevada)
-        List<String[]> results = app.searchWithFilters("", null, null, null, "Tree");
+        // VELVETLEAF and RED MAPLE
+        List<String[]> results = app.searchWithFilters(null, null, null, "North America");
         assertEquals(2, results.size());
     }
- 
+
     @Test
-    void testFilterByPlantTypeHerb() throws SQLException {
+    void testFilterByOriginEurope() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", null, null, null, "Herb");
-        assertEquals(2, results.size());
+        List<String[]> results = app.searchWithFilters(null, null, null, "Europe");
+        assertEquals(1, results.size());
+        assertEquals("balsam fir", results.get(0)[1]);
     }
- 
+
     @Test
-    void testFilterByPlantTypeNoResults() throws SQLException {
+    void testFilterByOriginNoResults() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("", null, null, null, "Cactus");
+        List<String[]> results = app.searchWithFilters(null, null, null, "Antarctica");
         assertTrue(results.isEmpty());
     }
- 
+
     // --- Combined name + filter ---
- 
+
     @Test
-    void testNameAndStateFilter() throws SQLException {
+    void testNameAndOriginFilter() throws SQLException {
         seedSearchData();
-        // "fir" in Nevada should return only balsam fir
-        List<String[]> results = app.searchWithFilters("fir", "Nevada", null, null, null);
+        List<String[]> results = app.searchWithFilters("fir", null, null, "Europe");
         assertEquals(1, results.size());
-        assertEquals("balsam fir", results.get(0)[2]);
+        assertEquals("balsam fir", results.get(0)[1]);
     }
- 
+
     @Test
-    void testNameAndStateMismatch() throws SQLException {
+    void testNameAndOriginMismatch() throws SQLException {
         seedSearchData();
-        // "fir" exists but not in Alabama — should return nothing
-        List<String[]> results = app.searchWithFilters("fir", "Alabama", null, null, null);
+        List<String[]> results = app.searchWithFilters("fir", null, null, "North America");
         assertTrue(results.isEmpty());
     }
- 
+
     @Test
-    void testNameAndLightFilter() throws SQLException {
+    void testNameAndCareLevelFilter() throws SQLException {
         seedSearchData();
-        // "maple" exists but is Partial Shade — searching Full Sun should miss it
-        List<String[]> results = app.searchWithFilters("maple", null, "Full Sun", null, null);
+        // maple is Moderate — searching Easy should miss it
+        List<String[]> results = app.searchWithFilters("maple", "Easy", null, null);
         assertTrue(results.isEmpty());
     }
- 
+
     @Test
-    void testNameAndWaterFilter() throws SQLException {
+    void testNameAndWateringFilter() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("VELVETLEAF", null, null, "Low", null);
+        List<String[]> results = app.searchWithFilters("VELVETLEAF", null, "Low", null);
         assertEquals(1, results.size());
-        assertEquals("ABTH", results.get(0)[0]);
+        assertEquals("VELVETLEAF", results.get(0)[1]);
     }
- 
+
     @Test
-    void testNameAndPlantTypeFilter() throws SQLException {
+    void testNameAndFamilyFilter() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("maple", null, null, null, "Tree");
+        // maple is Moderate care level
+        List<String[]> results = app.searchWithFilters("maple", "Moderate", null, null);
         assertEquals(1, results.size());
-        assertEquals("RED MAPLE", results.get(0)[2]);
+        assertEquals("RED MAPLE", results.get(0)[1]);
     }
- 
+
     // --- All filters combined ---
- 
+
     @Test
     void testAllFiltersMatch() throws SQLException {
         seedSearchData();
-        // poverty threeawn: Nevada, Full Sun, Low, Herb
-        List<String[]> results = app.searchWithFilters("threeawn", "Nevada", "Full Sun", "Low", "Herb");
+        // poverty threeawn: Easy, Low, South America
+        List<String[]> results = app.searchWithFilters("threeawn", "Easy", "Low", "South America");
         assertEquals(1, results.size());
-        assertEquals("ARDI", results.get(0)[0]);
+        assertEquals("poverty threeawn", results.get(0)[1]);
     }
- 
+
     @Test
     void testAllFiltersNoMatch() throws SQLException {
         seedSearchData();
-        // Correct name but wrong combination of filters
-        List<String[]> results = app.searchWithFilters("balsam fir", "Nevada", "Full Sun", "Low", "Herb");
-        assertTrue(results.isEmpty(), "balsam fir is Full Shade/High/Tree, not Full Sun/Low/Herb");
+        List<String[]> results = app.searchWithFilters("balsam fir", "Easy", "Low", "South America");
+        assertTrue(results.isEmpty(), "balsam fir is Hard/High/Europe, not Easy/Low/South America");
     }
- 
+
     // --- Return format ---
- 
+
     @Test
-    void testResultArrayHasSevenFields() throws SQLException {
+    void testResultArrayHasTenFields() throws SQLException {
         seedSearchData();
-        List<String[]> results = app.searchWithFilters("RED MAPLE", null, null, null, null);
+        List<String[]> results = app.searchWithFilters("RED MAPLE", null, null, null);
         assertFalse(results.isEmpty());
-        assertEquals(8, results.get(0).length,
-            "Each result should have 8 fields: symbol, scientific_name, common_name, state, light_requirement, water_requerment, plant_type, description");
+        assertEquals(11, results.get(0).length,
+            "Each result should have 11 fields: id, common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description, image_url");
     }
 }
+
+
