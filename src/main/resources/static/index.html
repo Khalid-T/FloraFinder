@@ -638,12 +638,7 @@
                 <textarea id="admin-desc" placeholder="Brief description of the plant..." style="width:100%; border:1px solid #e8e4dc; background:var(--parchment); padding:9px 12px; font-family:inherit; font-size:0.85rem; color:var(--text); outline:none; box-sizing:border-box; margin-bottom:12px; resize:vertical; min-height:60px;"></textarea>
                 <button class="admin-submit-btn btn-add" onclick="adminAdd()">Add Plant</button>
             </div>
-            <div class="admin-form-card">
-                <h3>Remove Plant</h3>
-                <label>Common Name</label>
-                <input type="text" id="admin-remove-name">
-                <button class="admin-submit-btn btn-remove" onclick="adminRemove()">Remove Plant</button>
-            </div>
+
         </div>
     </div>
     <div class="admin-msg" id="admin-msg"></div>
@@ -689,8 +684,9 @@ fetch('/featured-plants')
 
         const imgFile = plant[10] || '';
 
-        card.innerHTML = `
-        <div class="image-wrapper">
+       card.innerHTML = `
+        <div class="image-wrapper" style="position:relative;">
+            <button class="remove-plant-btn" style="display:none; background:#8b3a3a; color:white; border:none; border-radius:50%; width:28px; height:28px; font-size:1.1rem; line-height:1; cursor:pointer; position:absolute; top:10px; right:10px; z-index:10;" onclick="removePlant('${plant[1]}', this)">−</button>
             <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
         </div>
         <div class="plant-info">
@@ -698,6 +694,8 @@ fetch('/featured-plants')
             <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
             <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
             <div class="plant-meta">${badges}</div>
+            ${plant[9] ? `<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : '<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>'}
+            <button class="edit-desc-btn" style="display:none; background:none; border:1px solid var(--gold); color:var(--forest); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; padding:4px 12px; cursor:pointer; margin-bottom:8px;" onclick="editDescription('${plant[1]}', this)">Edit Description</button>
             <button class="wishlist-action" onclick="alert('Added ${plant[1]} to collection!')">+ Add to Collection</button>
         </div>
         `;
@@ -820,16 +818,18 @@ if (plant[3]) badges += `<span class="meta-badge">🧬 ${plant[3]}</span>`;
 const imgFile = plant[10] || '';
 
 card.innerHTML = `
-<div class="image-wrapper">
-<img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
+<div class="image-wrapper" style="position:relative;">
+    <button class="remove-plant-btn" style="display:none; background:#8b3a3a; color:white; border:none; border-radius:50%; width:28px; height:28px; font-size:1.1rem; line-height:1; cursor:pointer; position:absolute; top:10px; right:10px; z-index:10;" onclick="removePlant('${plant[1]}', this)">−</button>
+    <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
 </div>
 <div class="plant-info">
     <h3>${plant[1] || "Unnamed Specimen"}</h3>
     <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
     <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
     <div class="plant-meta">${badges}</div>
-${plant[9] ? `<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : '<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>'}    <button class="wishlist-action" onclick="alert('Added ${plant[1]} to collection!')">+ Add to Collection</button>
-<button class="edit-desc-btn" style="display:none; background:none; border:1px solid var(--gold); color:var(--forest); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; padding:4px 12px; cursor:pointer; margin-bottom:8px;" onclick="editDescription('${plant[1]}', this)">Edit Description</button>
+    ${plant[9] ? `<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : '<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>'}
+    <button class="edit-desc-btn" style="display:none; background:none; border:1px solid var(--gold); color:var(--forest); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; padding:4px 12px; cursor:pointer; margin-bottom:8px;" onclick="editDescription('${plant[1]}', this)">Edit Description</button>
+    <button class="wishlist-action" onclick="alert('Added ${plant[1]} to collection!')">+ Add to Collection</button>
 </div>
 `;
 // Show edit buttons if admin
@@ -837,7 +837,10 @@ display.appendChild(card);
 });
 // Show edit buttons if admin
 fetch('/is-admin').then(r => r.ok ? r.text() : '').then(v => {
-    if (v === 'true') document.querySelectorAll('.edit-desc-btn').forEach(b => b.style.display = 'inline-block');
+if (v === 'true') {
+    document.querySelectorAll('.edit-desc-btn').forEach(b => b.style.display = 'inline-block');
+    document.querySelectorAll('.remove-plant-btn').forEach(b => b.style.display = 'block');
+}
 });
 })
 .catch(() => {
@@ -859,6 +862,7 @@ document.getElementById('admin-panel').style.display = 'block';
 // Show edit buttons on all cards
 setTimeout(() => {
     document.querySelectorAll('.edit-desc-btn').forEach(btn => btn.style.display = 'inline-block');
+    document.querySelectorAll('.remove-plant-btn').forEach(btn => btn.style.display = 'block');
 }, 500);
 }
 })
@@ -938,6 +942,20 @@ function cancelEdit(btn, oldText) {
     const descP = card.querySelector('.plant-desc');
     descP.textContent = oldText;
     card.querySelector('.edit-desc-btn').style.display = 'inline-block';
+}
+function removePlant(commonName, btn) {
+    if (!confirm('Remove ' + commonName + ' from the catalogue?')) return;
+    const form = new URLSearchParams();
+    form.set('common_name', commonName);
+    fetch('/remove-plant', { method: 'POST', body: form })
+        .then(res => res.text())
+        .then(result => {
+            const card = btn.closest('.plant-card');
+            card.style.transition = 'opacity 0.3s';
+            card.style.opacity = '0';
+            setTimeout(() => card.remove(), 300);
+        })
+        .catch(() => alert('Failed to remove plant'));
 }
 function adminRemove() {
 const form = new URLSearchParams();
