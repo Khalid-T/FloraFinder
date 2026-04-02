@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In — Flora Catalogue</title>
+    <title>Reset Password — Flora Catalogue</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -101,7 +101,7 @@
             border-color: var(--sage);
         }
 
-        .signin-btn {
+        .reset-btn {
             width: 100%;
             background: var(--forest);
             color: white;
@@ -115,7 +115,7 @@
             transition: 0.4s;
         }
 
-        .signin-btn:hover {
+        .reset-btn:hover {
             background: #25554a;
         }
 
@@ -144,33 +144,35 @@
 </nav>
 
 <div class="auth-container">
-    <div class="auth-card" id="login-card">
-        <h2>Welcome Back</h2>
-        <p class="subtitle">Access the Archives</p>
+    <div class="auth-card" id="reset-card">
+        <h2>Reset Password</h2>
+        <p class="subtitle">Update your credentials</p>
 
-        <form action="/login-endpoint" method="POST">
+        <form action="/reset-password" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <label for="old_password">Current Password</label>
+                <input type="password" id="old_password" name="old_password" required>
             </div>
-            <button type="submit" class="signin-btn">Enter the Garden</button>
+            <div class="form-group">
+                <label for="new_password">New Password</label>
+                <input type="password" id="new_password" name="new_password" required>
+            </div>
+            <button type="submit" class="reset-btn">Update Password</button>
         </form>
 
         <div class="footer-links">
-            <p>No account? <a href="signup.html">Sign up here</a></p>
-            <p><a href="reset.html">Forgot Password?</a></p>
-            <a href="index.html">← Back to Catalogue</a>
+            <a href="signin.html">← Back to Sign In</a>
         </div>
     </div>
 </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const card = document.getElementById('login-card');
+    const card = document.getElementById('reset-card');
 
     if (urlParams.has('error')) {
         const errorDiv = document.createElement('div');
@@ -178,29 +180,9 @@
         errorDiv.style.fontSize = '0.8rem';
         errorDiv.style.marginBottom = '20px';
         errorDiv.style.animation = "shake 0.4s ease-in-out";
-        errorDiv.innerText = 'Invalid username or password.';
+        // Decode the error message from the URL
+        errorDiv.innerText = decodeURIComponent(urlParams.get('error'));
         card.insertBefore(errorDiv, card.querySelector('form'));
-    }
-
-    if (urlParams.has('registered')) {
-        const successDiv = document.createElement('div');
-        successDiv.style.color = '#1a3c34';
-        successDiv.style.fontSize = '0.8rem';
-        successDiv.style.marginBottom = '20px';
-        successDiv.innerText = 'Registration successful! Please sign in.';
-        card.insertBefore(successDiv, card.querySelector('form'));
-    }
-
-
-    if (urlParams.has('reset')) {
-        const resetDiv = document.createElement('div');
-        resetDiv.style.color = '#1a3c34'; // Using your --forest color
-        resetDiv.style.fontSize = '0.8rem';
-        resetDiv.style.marginBottom = '20px';
-        resetDiv.style.padding = '10px';
-        resetDiv.style.background = '#f0f4f1'; // Light sage background
-        resetDiv.innerText = 'Password updated successfully! Please sign in.';
-        card.insertBefore(resetDiv, card.querySelector('form'));
     }
 </script>
 

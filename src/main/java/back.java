@@ -354,6 +354,26 @@ public class back{
                 ctx.redirect("/signup.html?error=exists");
             }
         });
+
+        server.post("/reset-password", ctx -> {
+            String user = ctx.formParam("username");
+            String oldPass = ctx.formParam("old_password");
+            String newPass = ctx.formParam("new_password");
+
+            try {
+                String result = appLogic.reset_password(user, oldPass, newPass);
+
+                if (result.equals("Password updated!")) {
+                    // Redirect to signin with a success message
+                    ctx.redirect("/signin.html?reset=success");
+                } else {
+                    // Redirect back with the specific error message
+                    ctx.redirect("/reset.html?error=" + java.net.URLEncoder.encode(result, "UTF-8"));
+                }
+            } catch (SQLException e) {
+                ctx.redirect("/reset.html?error=Database error");
+            }
+        });
     }
 
 
