@@ -41,7 +41,8 @@ public class back{
       System.out.println("[log] Password for "+ username + " has been updated");
       return "Password updated!";
   }
-
+    
+    // ==========================  Remove User ====================================
     public String removeusr(String username)throws SQLException{
           if (is_admin == false){
              System.out.println("[log] login first");
@@ -52,13 +53,38 @@ public class back{
 
          removed.setString(1,username);
          removed.executeUpdate();
+         removed.close();
 
+         
          System.out.println("[log]  User Removed "+ username);
          return username + " has been removed successfully.";
-        
     }
-       
-   //------------------------------------login --------------------------------------------
+
+    // ================================ Promote ==================================
+    public String promote(String username) throws SQLException{
+        if (is_admin == false){
+            System.out.println("[log] login first");
+            return "login as an admin first";
+        }
+
+        PreparedStatement promo = conn.prepareStatement ("UPDATE users SET admin = ? WHERE username = ?");
+
+        promo.setString(1,"1");
+        promo.setString(2,username);
+        
+        promo.executeUpdate();
+        promo.close();
+        
+        System.out.println("[log] "+ username+" has been promoted");
+        return username +" has been promoted";
+      }
+
+
+    public boolean isAdmin() {
+        return is_admin;
+    }
+
+   // ================================= Sign Up =================================== 
     public String sign_up(String username, String password, int  admin) throws SQLException {
 
         String insertSql = "INSERT INTO users (username, password, admin) VALUES (?, ?, ?)";
@@ -70,21 +96,33 @@ public class back{
         addusr.setInt(3, admin);
 
         addusr.executeUpdate();
-
+        addusr.close();
+        
         if (admin == 0){
              System.out.println("[log] User " + username + " created (non-admin)");
              return "User " + username + " has been added and is not admin";
 
         }else{
-             System.out.println("[log] User " + username + " created (non-admin)");
-             return "User " + username + " has been added and is not admin";
+             System.out.println("[log] User " + username + " created (admin)");
+             return "User " + username + " has been added and is admin";
 
         }
     } 
     public void logout(){
-        System.out.println("[log] admin has logged off");
-        is_admin = false; 
+        if (is_admin == true){
+             System.out.println("[log] admin has logged off");
+             is_admin = false; 
+
+        }else{
+              System.out.println("[log] user has logged off");
+             is_admin = false; 
+
+            
+        }
+        
     }
+    
+   //------------------------------------login --------------------------------------------
     public boolean login(String username, String password) throws SQLException{
 
         PreparedStatement stmt = conn.prepareStatement( "SELECT * FROM users WHERE username = ? AND password = ?");
@@ -235,10 +273,6 @@ public class back{
         return results;
     }
 
-
-    public boolean isAdmin() {
-        return is_admin;
-    }
 
 
     public static void main(String[] args) throws Exception {
@@ -414,43 +448,4 @@ public class back{
         });
     }
 
-
-//    public  static void  main(String[] args) throws  Exception{
-//
-//        Class.forName("org.sqlite.JDBC");
-//
-//        back app = new back();
-//
-//        System.out.println("Connected to db \n\n");
-//        //app.login("admin","admin");
-//        app.add("test","test","test","test");
-//        app.remove("test");
-//
-//        app.login("admin","admin");
-//
-//        app.add("test","test","test","test");
-//
-//        app.remove("test");
-//        // Scanner input = new Scanner(System.in);
-//
-//
-//        /*
-//          while (true){
-//          input.nextLine();
-//          if (input.equals("quit")){
-//          break;
-//
-//          }else if (input.equals("add")){
-//
-//
-//          }
-//
-//
-//          }
-//          input.close();
-//
-//        */
-//
-//        app.close();
-//    }
 }

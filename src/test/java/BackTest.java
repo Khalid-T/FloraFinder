@@ -108,15 +108,53 @@ public class BackTest {
     }
     // ----------------------- remove users -----------------------
     @Test
-    void testremoveusr() throws SQLException{
-        app.sign_up("admin","pass",1);
-        app.login("admin","pass");
-        app.sign_up("g","g",0);
-        String test = app.removeusr("g");
-        assertEquals("g has been removed successfully.", test);
+    void testRemoveUserSuccess() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.sign_up("guest", "guest", 0);
+        app.login("admin", "pass");
+        assertEquals("guest has been removed successfully.", app.removeusr("guest"));
+    }
+
+    @Test
+    void testRemoveUserWithoutAdmin() throws SQLException {
+        app.sign_up("guest", "guest", 0);
+        assertEquals("login as an admin first", app.removeusr("guest"));
+    }
+
+   @Test
+   void testRemoveUserActuallyDeleted() throws SQLException {
+       app.sign_up("admin", "pass", 1);
+       app.sign_up("guest", "guest", 0);
+       app.login("admin", "pass");
+       app.removeusr("guest");
+       assertFalse(app.login("guest", "guest")); // can't log in if deleted
+   }
+    // -------------------------- promote  -------------
+    @Test
+    void testPromoteSuccess() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.sign_up("guest", "guest", 0);
+        app.login("admin", "pass");
+        assertEquals("guest has been promoted", app.promote("guest"));
     }
                 
-     
+    @Test
+    void testPromoteActuallyChangesRole() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.sign_up("guest", "guest", 0);
+        app.login("admin", "pass");
+        app.promote("guest");
+        app.logout();
+        app.login("guest", "guest");
+        assertTrue(app.isAdmin());
+    }
+
+    @Test
+    void testPromoteWithoutAdmin() throws SQLException {
+        app.sign_up("guest", "guest", 0);
+        assertEquals("login as an admin first", app.promote("guest"));
+    }
+                
     //--------------------- LOGOUT TEST ----------------------
     @Test
     void testLogoutResetsAdmin() throws SQLException {
