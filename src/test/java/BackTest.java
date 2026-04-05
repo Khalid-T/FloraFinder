@@ -85,7 +85,22 @@ public class BackTest {
         assertEquals("New password cannot equal old password", result);
     }
     //----------------------------------------------------------------------------------------
-    
+    @Test
+    void testshowallusers() throws SQLException {
+
+        app.sign_up("admin","admin",1);
+        app.sign_up("guest1","guest1",0);
+        app.sign_up("guest2","guest2",0);
+        app.sign_up("guest3","guest3",0);
+        app.sign_up("guest4","guest4",0);
+        app.sign_up("guest5","guest5",0);
+
+        app.login("admin","admin");
+        String result = app.getAllUsers();
+        assertNotNull(result);
+        assertTrue(result.contains("admin"));
+        
+    }
     //--------------------- SIGN-UP TESTS ---------------------
     @Test
     void testSignupNormalUser() throws SQLException {
