@@ -48,7 +48,7 @@ public class back{
              System.out.println("[log] login first");
             return "login as an admin first";
         }
-         PreparedStatement removed = conn.prepareStatement(
+          PreparedStatement removed = conn.prepareStatement(
                     "DELETE FROM  users Where username = ?" );
 
          removed.setString(1,username);
@@ -60,6 +60,28 @@ public class back{
          return username + " has been removed successfully.";
     }
 
+    // ================================== SHOW ALL USERS =======================
+    public String getAllUsers()throws SQLException{
+        if (is_admin == false){
+            System.out.println("[log] login first");
+            return "login as an admin first";
+        }
+        StringBuilder result = new StringBuilder();
+        String sql = "SELECT * FROM users";
+        
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql); 
+        
+        while (rs.next()) {
+            String row = rs.getInt("id") + "\t" +
+                rs.getString("username") + "\t" +
+                 (rs.getInt("admin") == 1 ? "admin" : "guest");
+            System.out.println(row);
+            result.append(row).append("\n");
+        }
+        return result.toString();
+    
+    }
     // ================================ Promote ==================================
     public String promote(String username) throws SQLException{
         if (is_admin == false){
@@ -83,7 +105,7 @@ public class back{
     public boolean isAdmin() {
         return is_admin;
     }
-
+    
    // ================================= Sign Up =================================== 
     public String sign_up(String username, String password, int  admin) throws SQLException {
 
