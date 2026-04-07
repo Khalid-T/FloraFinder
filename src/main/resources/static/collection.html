@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Collection — Flora Catalogue</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --forest: #1a3c34;
+            --sage: #7b8d7e;
+            --parchment: #f9f7f2;
+            --gold: #c5a059;
+            --text: #2c2c2c;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--parchment);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ── Navigation ─────────────────────────────────────────────────── */
+        .glass-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: var(--forest);
+            text-decoration: none;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-cta {
+            padding: 10px 25px;
+            border: 1px solid var(--forest);
+            color: var(--forest);
+            text-decoration: none;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.4s;
+        }
+
+        .nav-cta:hover {
+            background: var(--forest);
+            color: white;
+        }
+
+        #welcome-msg {
+            font-size: 0.8rem;
+            color: var(--sage);
+            font-weight: 500;
+        }
+
+        /* ── Page header ─────────────────────────────────────────────────── */
+        .page-header {
+            text-align: center;
+            padding: 70px 20px 80px;
+            background: linear-gradient(to bottom, rgba(26, 60, 52, 0.05), transparent);
+        }
+
+        .page-header .pre-title {
+            font-size: 0.7rem;
+            letter-spacing: 5px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .page-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--forest);
+        }
+
+        .page-header .subtitle {
+            font-size: 0.95rem;
+            font-style: italic;
+            color: var(--sage);
+            font-family: 'Cormorant Garamond', serif;
+            margin-top: 8px;
+        }
+
+        /* ── Results meta ────────────────────────────────────────────────── */
+        .results-meta {
+            max-width: 1400px;
+            margin: 0 auto 10px;
+            padding: 0 5%;
+            font-size: 0.75rem;
+            color: var(--sage);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            min-height: 20px;
+        }
+
+        /* ── Plant card grid — identical to index.html ───────────────────── */
+        .catalogue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 350px));
+            gap: 50px;
+            padding: 20px 5% 100px;
+            justify-content: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .plant-card {
+            background: white;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .plant-card:hover {
+            transform: translateY(-12px);
+        }
+
+        .image-wrapper {
+            position: relative;
+            height: 350px;
+            background: #f4f1ec;
+            overflow: hidden;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(10%) sepia(5%);
+            transition: transform 1s ease;
+        }
+
+        .plant-card:hover .image-wrapper img {
+            transform: scale(1.08);
+        }
+
+        .plant-info {
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .plant-info h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            margin: 0 0 5px;
+            color: var(--forest);
+        }
+
+        .scientific-name {
+            font-style: italic;
+            font-size: 0.85rem;
+            color: var(--sage);
+            margin-bottom: 5px;
+        }
+
+        .region-tag {
+            font-size: 0.7rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .plant-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .meta-badge {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 3px 10px;
+            border: 1px solid #e8e4dc;
+            color: var(--sage);
+            border-radius: 20px;
+        }
+
+        /* Remove button — same style as wishlist-action but for removal */
+        .remove-action {
+            background: none;
+            border: none;
+            color: #8b3a3a;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            font-weight: 600;
+            padding: 10px;
+            border-bottom: 1px solid #c88;
+            transition: 0.3s;
+        }
+
+        .remove-action:hover {
+            background: #8b3a3a;
+            color: white;
+            border-bottom-color: #8b3a3a;
+        }
+
+        /* ── Status / empty states ───────────────────────────────────────── */
+        .status-msg {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 100px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--sage);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .empty-state p {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--sage);
+            margin-bottom: 20px;
+        }
+
+        .empty-state a {
+            display: inline-block;
+            padding: 12px 32px;
+            border: 1px solid var(--forest);
+            color: var(--forest);
+            text-decoration: none;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.4s;
+        }
+
+        .empty-state a:hover {
+            background: var(--forest);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="glass-nav">
+    <a href="index.html" class="nav-logo">Flora Catalogue</a>
+    <div class="nav-right">
+        <span id="welcome-msg"></span>
+        <a href="index.html" class="nav-cta">← Back to Catalogue</a>
+        <a href="/logout" class="nav-cta">Log Out</a>
+    </div>
+</nav>
+
+<header class="page-header">
+    <p class="pre-title">Personal Archive</p>
+    <h1>My Collection</h1>
+    <p class="subtitle">Your curated selection of botanical specimens</p>
+</header>
+
+<div class="results-meta" id="results-meta"></div>
+
+<main id="plants-display" class="catalogue-grid">
+    <div class="status-msg">Loading your collection...</div>
+</main>
+
+<script>
+
+// ── Guard: redirect to sign in if not authenticated ───────────────────────
+fetch('/get-user')
+    .then(res => {
+        if (!res.ok) {
+            window.location.href = '/signin.html';
+            return null;
+        }
+        return res.text();
+    })
+    .then(username => {
+        if (!username || username.trim() === '') {
+            window.location.href = '/signin.html';
+            return;
+        }
+        document.getElementById('welcome-msg').innerText = `Welcome back, ${username}`;
+        loadCollection();
+    })
+    .catch(() => { window.location.href = '/signin.html'; });
+
+// ── Load the user's collection ────────────────────────────────────────────
+function loadCollection() {
+    fetch('/get-collection')
+        .then(res => {
+            if (!res.ok) throw new Error('Not authenticated');
+            return res.json();
+        })
+        .then(plants => {
+            const display = document.getElementById('plants-display');
+            const meta    = document.getElementById('results-meta');
+            display.innerHTML = '';
+
+            if (!plants || plants.length === 0) {
+                meta.textContent = '';
+                display.innerHTML = `
+                    <div class="empty-state">
+                        <p>Your collection is empty.</p>
+                        <a href="index.html">Browse the catalogue</a>
+                    </div>`;
+                return;
+            }
+
+            meta.textContent = `${plants.length} specimen${plants.length !== 1 ? 's' : ''} saved`;
+
+            // plant[0]=id, [1]=common_name, [2]=sci_name, [3]=family, [4]=genus,
+            // [5]=species_epithet, [6]=care_level, [7]=watering, [8]=origin,
+            // [9]=description, [10]=image_url
+            plants.forEach(plant => {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+
+                let badges = '';
+                if (plant[6]) badges += `<span class="meta-badge">🌱 ${plant[6]}</span>`;
+                if (plant[7]) badges += `<span class="meta-badge">💧 ${plant[7]}</span>`;
+                if (plant[8]) badges += `<span class="meta-badge">🌍 ${plant[8]}</span>`;
+                if (plant[3]) badges += `<span class="meta-badge">🧬 ${plant[3]}</span>`;
+
+                const imgFile = plant[10] || '';
+
+                card.innerHTML = `
+                <div class="image-wrapper">
+                    <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}"
+                         onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
+                </div>
+                <div class="plant-info">
+                    <h3>${plant[1] || "Unnamed Specimen"}</h3>
+                    <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
+                    <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
+                    <div class="plant-meta">${badges}</div>
+                    ${plant[9]
+                        ? `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>`
+                        : `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>`
+                    }
+                    <button class="remove-action" onclick="removeFromCollection(${plant[0]}, this)">− Remove from Collection</button>
+                </div>
+                `;
+                display.appendChild(card);
+            });
+        })
+        .catch(() => {
+            document.getElementById('plants-display').innerHTML =
+                `<div class='status-msg' style='color:#a34a4a;'>Could not load collection.<br><small>Ensure back.java is active</small></div>`;
+        });
+}
+
+// ── Remove a plant from the collection ───────────────────────────────────
+function removeFromCollection(plantId, btn) {
+    if (!confirm('Remove this plant from your collection?')) return;
+
+    const form = new URLSearchParams();
+    form.set('plant_id', plantId);
+
+    fetch('/remove-from-collection', { method: 'POST', body: form })
+        .then(res => res.text())
+        .then(result => {
+            if (result === 'removed') {
+                const card = btn.closest('.plant-card');
+                card.style.transition = 'opacity 0.3s';
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.remove();
+                    // Update count
+                    const remaining = document.querySelectorAll('.plant-card').length;
+                    document.getElementById('results-meta').textContent =
+                        remaining === 0 ? '' : `${remaining} specimen${remaining !== 1 ? 's' : ''} saved`;
+                    if (remaining === 0) {
+                        document.getElementById('plants-display').innerHTML = `
+                            <div class="empty-state">
+                                <p>Your collection is empty.</p>
+                                <a href="index.html">Browse the catalogue</a>
+                            </div>`;
+                    }
+                }, 300);
+            }
+        })
+        .catch(() => alert('Failed to remove plant'));
+}
+
+</script>
+
+</body>
+</html>
