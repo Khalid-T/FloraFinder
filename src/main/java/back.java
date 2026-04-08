@@ -104,6 +104,80 @@ public class back {
         return results;
     }
 
+    // finds plants not in users collection that share 2+ matching fields with any
+    // collected plant. Returns up to 5 plants
+    public List<String[]> getRecommendations(String username) throws SQLException {
+        List<String[]> collection = getCollection(username);
+
+        // Nothing to base recommendations on
+        if (collection.isEmpty())
+            return new ArrayList<>();
+
+        // Fetch all plants not already in this user's collection
+        PreparedStatement allPlants = conn.prepareStatement(
+                "SELECT p.id, p.common_name, p.sci_name, p.family, p.genus, p.species_epithet, " +
+                        "       p.care_level, p.watering, p.origin, p.description, p.image_url " +
+                        "FROM plants p " +
+                        "WHERE p.id NOT IN (" +
+                        "  SELECT c.plant_id FROM collections c " +
+                        "  JOIN users u ON u.id = c.user_id WHERE u.username = ?" +
+                        ")");
+        allPlants.setString(1, username);
+        ResultSet rs = allPlants.executeQuery();
+
+        List<String[]> candidates = new ArrayList<>();
+        while (rs.next()) {
+            candidates.add(new String[] {
+                    String.valueOf(rs.getInt("id")),
+                    rs.getString("common_name"),
+                    rs.getString("sci_name"),
+                    rs.getString("family"), // [3]
+                    rs.getString("genus"), // [4]
+                    rs.getString("species_epithet"),
+                    rs.getString("care_level"), // [6]
+                    rs.getString("watering"), // [7]
+                    rs.getString("origin"), // [8]
+                    rs.getString("description"),
+                    rs.getString("image_url")
+            });
+        }
+        allPlants.close();
+
+        // Score each candidate: count how many fields match ANY collected plant
+        // Comparable fields: care_level[6], watering[7], origin[8], family[3], genus[4]
+        List<String[]> qualified = new ArrayList<>();
+        for (String[] candidate : candidates) {
+            int bestScore = 0;
+            for (String[] collected : collection) {
+                int score = 0;
+                if (eq(candidate[3], collected[3]))
+                    score++; // family
+                if (eq(candidate[4], collected[4]))
+                    score++; // genus
+                if (eq(candidate[6], collected[6]))
+                    score++; // care_level
+                if (eq(candidate[7], collected[7]))
+                    score++; // watering
+                if (eq(candidate[8], collected[8]))
+                    score++; // origin
+                if (score > bestScore)
+                    bestScore = score;
+            }
+            if (bestScore >= 2)
+                qualified.add(candidate);
+        }
+
+        java.util.Collections.shuffle(qualified);
+        return qualified.subList(0, Math.min(5, qualified.size()));
+    }
+
+    // equality helper
+    private boolean eq(String a, String b) {
+        if (a == null || b == null)
+            return false;
+        return a.trim().equalsIgnoreCase(b.trim());
+    }
+
     public void close() throws SQLException {
         conn.close();
     }
@@ -614,6 +688,36 @@ public class back {
             ctx.result(json.toString());
         });
 
+        server.get("/get-recommendations", ctx -> {
+            String user = ctx.sessionAttribute("currentUser");
+            if (user == null) {
+                ctx.status(401).result("[]");
+                return;
+            }
+
+            List<String[]> results = appLogic.getRecommendations(user);
+
+            StringBuilder json = new StringBuilder("[");
+            for (int i = 0; i < results.size(); i++) {
+                String[] p = results.get(i);
+                json.append("[");
+                for (int j = 0; j < p.length; j++) {
+                    String cleaned = (p[j] == null) ? "" : p[j].replace("\\", "\\\\").replace("\"", "\\\"");
+                    json.append("\"").append(cleaned).append("\"");
+                    if (j < p.length - 1)
+                        json.append(",");
+                }
+                json.append("]");
+                if (i < results.size() - 1)
+                    json.append(",");
+            }
+            json.append("]");
+
+            ctx.contentType("application/json");
+            ctx.result(json.toString());
+        });
+
+        // reset password
         server.post("/reset-password", ctx -> {
             String user = ctx.formParam("username");
             String oldPass = ctx.formParam("old_password");

@@ -261,6 +261,51 @@
             background: var(--forest);
             color: white;
         }
+        /* ── Recommendations section ─────────────────────────────────────── */
+        .recommendations-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 5% 100px;
+        }
+
+        .recommendations-header {
+            text-align: center;
+            padding: 60px 0 10px;
+            border-top: 1px solid #e8e4dc;
+            margin-bottom: 10px;
+        }
+
+        .recommendations-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            color: var(--forest);
+            margin: 0 0 8px;
+        }
+
+        .recommendations-header p {
+            font-size: 0.8rem;
+            color: var(--sage);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0;
+        }
+
+        .recommendations-empty {
+            text-align: center;
+            padding: 40px 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            color: var(--sage);
+            font-style: italic;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 350px));
+            gap: 50px;
+            padding: 20px 0;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -286,6 +331,18 @@
     <div class="status-msg">Loading your collection...</div>
 </main>
 
+<!-- Recommendations Section -->
+<section class="recommendations-section">
+    <div class="recommendations-header">
+        <h2>You Might Also Like</h2>
+        <p>Based on your collection</p>
+    </div>
+    <div id="recommendations-empty" class="recommendations-empty" style="display:none;">
+        Add some plants to your collection to start viewing recommendations!
+    </div>
+    <div id="recommendations-display" class="recommendations-grid"></div>
+</section>
+
 <script>
 
 // ── Guard: redirect to sign in if not authenticated ───────────────────────
@@ -304,6 +361,7 @@ fetch('/get-user')
         }
         document.getElementById('welcome-msg').innerText = `Welcome back, ${username}`;
         loadCollection();
+        loadRecommendations();
     })
     .catch(() => { window.location.href = '/signin.html'; });
 
@@ -403,6 +461,86 @@ function removeFromCollection(plantId, btn) {
             }
         })
         .catch(() => alert('Failed to remove plant'));
+}
+// ── Load Recommendations ──────────────────────────────────────────────────
+function loadRecommendations() {
+    fetch('/get-recommendations')
+        .then(res => {
+            if (!res.ok) return [];
+            return res.json();
+        })
+        .then(plants => {
+            const grid  = document.getElementById('recommendations-display');
+            const empty = document.getElementById('recommendations-empty');
+
+            // If collection is empty the endpoint returns [], show the prompt
+            if (!plants || plants.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+
+            plants.forEach(plant => {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+
+                let badges = '';
+                if (plant[6]) badges += `<span class="meta-badge">🌱 ${plant[6]}</span>`;
+                if (plant[7]) badges += `<span class="meta-badge">💧 ${plant[7]}</span>`;
+                if (plant[8]) badges += `<span class="meta-badge">🌍 ${plant[8]}</span>`;
+                if (plant[3]) badges += `<span class="meta-badge">🧬 ${plant[3]}</span>`;
+
+                const imgFile = plant[10] || '';
+
+                card.innerHTML = `
+                <div class="image-wrapper">
+                    <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}"
+                         onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
+                </div>
+                <div class="plant-info">
+                    <h3>${plant[1] || "Unnamed Specimen"}</h3>
+                    <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
+                    <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
+                    <div class="plant-meta">${badges}</div>
+                    ${plant[9]
+                        ? `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>`
+                        : `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>`
+                    }
+                    <button class="wishlist-action" onclick="addToCollection(${plant[0]}, '${plant[1]}', this)">+ Add to Collection</button>
+                </div>`;
+                grid.appendChild(card);
+            });
+        })
+        .catch(() => {
+            document.getElementById('recommendations-empty').style.display = 'block';
+        });
+}
+
+// ── Add recommended plant directly to collection ──────────────────────────
+function addToCollection(plantId, plantName, btn) {
+    const form = new URLSearchParams();
+    form.set('plant_id', plantId);
+
+    fetch('/add-to-collection', { method: 'POST', body: form })
+        .then(res => {
+            if (res.status === 401) { window.location.href = '/signin.html'; return null; }
+            return res.text();
+        })
+        .then(result => {
+            if (!result) return;
+            if (result === 'added') {
+                btn.textContent = '✓ Saved';
+                btn.style.background = 'var(--forest)';
+                btn.style.color = 'white';
+                btn.disabled = true;
+            } else if (result === 'already') {
+                btn.textContent = '✓ In Collection';
+                btn.style.color = 'var(--sage)';
+                btn.disabled = true;
+            } else {
+                btn.textContent = '✗ Error';
+            }
+        })
+        .catch(() => { btn.textContent = '✗ Error'; });
 }
 
 </script>
