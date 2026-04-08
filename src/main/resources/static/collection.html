@@ -311,17 +311,17 @@
 <body>
 
 <nav class="glass-nav">
-    <a href="index.html" class="nav-logo">Flora Catalogue</a>
+    <a href="index.html" class="nav-logo">FloraFinder</a>
     <div class="nav-right">
         <span id="welcome-msg"></span>
-        <a href="index.html" class="nav-cta">← Back to Catalogue</a>
+        <a href="index.html" class="nav-cta">← Back to Home</a>
         <a href="/logout" class="nav-cta">Log Out</a>
     </div>
 </nav>
 
 <header class="page-header">
-    <p class="pre-title">Personal Archive</p>
-    <h1>My Collection</h1>
+    <p class="pre-title">Personal Collection</p>
+    <h1>My Wishlist</h1>
     <p class="subtitle">Your curated selection of botanical specimens</p>
 </header>
 
@@ -334,11 +334,11 @@
 <!-- Recommendations Section -->
 <section class="recommendations-section">
     <div class="recommendations-header">
-        <h2>You Might Also Like</h2>
-        <p>Based on your collection</p>
+        <h2>Some Recommendations</h2>
+        <p>Based on your wishlist</p>
     </div>
     <div id="recommendations-empty" class="recommendations-empty" style="display:none;">
-        Add some plants to your collection to start viewing recommendations!
+        Add some plants to your wishlist to start viewing recommendations!
     </div>
     <div id="recommendations-display" class="recommendations-grid"></div>
 </section>
@@ -418,7 +418,7 @@ function loadCollection() {
                         ? `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>`
                         : `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>`
                     }
-                    <button class="remove-action" onclick="removeFromCollection(${plant[0]}, this)">− Remove from Collection</button>
+                    <button class="remove-action" onclick="removeFromCollection(${plant[0]}, this)">Remove from Wishlist</button>
                 </div>
                 `;
                 display.appendChild(card);
@@ -505,7 +505,8 @@ function loadRecommendations() {
                         ? `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>`
                         : `<p style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>`
                     }
-                    <button class="wishlist-action" onclick="addToCollection(${plant[0]}, '${plant[1]}', this)">+ Add to Collection</button>
+                
+                    <button class="wishlist-action" onclick="addToCollection(${plant[0]}, '${plant[1]}', this)">Save to my wishlist</button>
                 </div>`;
                 grid.appendChild(card);
             });

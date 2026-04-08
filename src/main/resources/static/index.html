@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flora Catalogue — Curated Botanicals</title>
+    <title>FloraFinder</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
 
     <style>
@@ -410,7 +410,7 @@
 <body>
 
 <nav class="glass-nav">
-    <a href="index.html" class="nav-logo">Flora Catalogue</a>
+    <a href="index.html" class="nav-logo">FloraFinder</a>
     <div class="nav-right">
         <span id="welcome-msg"></span>
         <a href="./signin.html" id="auth-link" class="nav-cta">Sign In</a>
@@ -419,8 +419,8 @@
 
 <header class="hero-header">
     <div class="hero-content">
-        <p class="pre-title">EST. 2026</p>
-        <h1>FloraFinder</h1>
+        <!-- <p class="pre-title">EST. 2026</p> --> 
+        <h1>Catalogue</h1>
         <p class="subtitle">Curated Botanicals for the Modern Collector</p>
     </div>
 </header>
@@ -477,7 +477,7 @@
 </section>
 <!-- My Collection link (visible only when logged in) -->
 <div id="collection-bar" style="display:none; max-width:900px; margin:18px auto 0; padding:0 20px;">
-    <a href="collection.html" class="nav-cta" style="display:inline-block; padding:10px 28px; border:1px solid var(--forest); color:var(--forest); text-decoration:none; font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; transition:0.4s;" onmouseover="this.style.background='#1a3c34';this.style.color='white';" onmouseout="this.style.background='';this.style.color='var(--forest)';">🌿 My Collection</a>
+    <a href="collection.html" class="nav-cta" style="display:inline-block; padding:10px 28px; border:1px solid var(--forest); color:var(--forest); text-decoration:none; font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; transition:0.4s;" onmouseover="this.style.background='#1a3c34';this.style.color='white';" onmouseout="this.style.background='';this.style.color='var(--forest)';">View My Wishlist🌿</a>
 </div>
 
 <!-- Admin Panel (hidden by default, shown only for admins) -->
@@ -655,6 +655,23 @@
 
 
 </main>
+
+<!-- Refresh button -->
+<div style="text-align:center; margin: 0 0 40px;">
+    <button onclick="loadFeaturedPlants()" class="refresh-btn" id="refresh-btn" style="
+        background: none;
+        border: 1px solid var(--gold);
+        color: var(--forest);
+        font-family: inherit;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        padding: 12px 36px;
+        cursor: pointer;
+        transition: 0.3s;
+    ">↻ Refresh</button>
+</div>
+
 <script>
 
 // ── Auth ──────────────────────────────────────────────────────────────────
@@ -671,11 +688,19 @@ document.getElementById('collection-bar').style.display = 'block';
 }
 })
 .catch(() => {});
-// ── Load featured plants on page load ─────────────────────────────────
+
+// ── Load featured plants ───────────────────────────────────────────────────
+function loadFeaturedPlants() {
+    const display = document.getElementById('plants-display');
+    window.scrollTo({ top: 333, behavior: 'smooth'});
+    const btn = document.getElementById('refresh-btn');
+    display.innerHTML = "<div class='status-msg'>loading botanical archives...</div>";
+    if (btn) { btn.textContent = '↻ Refreshing...'; btn.disabled = true; }
+
 fetch('/featured-plants')
 .then(res => res.ok ? res.json() : [])
 .then(plants => {
-    const display = document.getElementById('plants-display');
+    display.innerHTML = '';
     if (!plants || plants.length === 0) return;
 
     plants.forEach(plant => {
@@ -702,15 +727,28 @@ fetch('/featured-plants')
             <div class="plant-meta">${badges}</div>
             ${plant[9] ? `<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : '<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>'}
             <button class="edit-desc-btn" style="display:none; background:none; border:1px solid var(--gold); color:var(--forest); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; padding:4px 12px; cursor:pointer; margin-bottom:8px;" onclick="editDescription('${plant[1]}', this)">Edit Description</button>
-            <button class="wishlist-action" onclick="addToCollection(${plant[0]}, '${plant[1]}', this)">+ Add to Collection</button>
+            <button class="wishlist-action" onclick="addToCollection(${plant[0]}, '${plant[1]}', this)">Add to Wishlist</button>
         </div>
         `;
         display.appendChild(card);
     });
 
+    // Re-apply admin buttons if admin
+    fetch('/is-admin').then(r => r.ok ? r.text() : '').then(v => {
+        if (v === 'true') {
+            document.querySelectorAll('.edit-desc-btn').forEach(b => b.style.display = 'inline-block');
+            document.querySelectorAll('.remove-plant-btn').forEach(b => b.style.display = 'block');
+        }
+    });
 })
+.catch(() => {})
+.finally(() => {
+    if (btn) { btn.textContent = '↻ Refresh'; btn.disabled = false; }
+});
+}
 
-.catch(() => {});
+// Call on page load
+loadFeaturedPlants();
 
 // ── Filter panel toggle ───────────────────────────────────────────────────
 function toggleFilters() {
