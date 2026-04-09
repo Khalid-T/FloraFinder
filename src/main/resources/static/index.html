@@ -5,406 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FloraFinder</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --forest: #1a3c34;
-            --sage: #7b8d7e;
-            --parchment: #f9f7f2;
-            --gold: #c5a059;
-            --text: #2c2c2c;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--parchment);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        /* 1. Navigation */
-        .glass-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 5%;
-            background: white;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-logo {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.8rem;
-            color: var(--forest);
-            text-decoration: none;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-        }
-
-        .nav-cta {
-            padding: 10px 25px;
-            border: 1px solid var(--forest);
-            color: var(--forest);
-            text-decoration: none;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: 0.4s;
-        }
-
-        .nav-cta:hover {
-            background: var(--forest);
-            color: white;
-        }
-
-        #welcome-msg {
-            margin-right: 20px;
-            font-size: 0.8rem;
-            color: var(--sage);
-            font-weight: 500;
-        }
-
-        /* 2. Hero Section */
-        .hero-header {
-            text-align: center;
-            padding: 100px 20px 140px;
-            background: linear-gradient(to bottom, rgba(26, 60, 52, 0.05), transparent);
-        }
-
-        .hero-header h1 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 4.5rem;
-            font-weight: 600;
-            margin: 0;
-            color: var(--forest);
-        }
-
-        .pre-title {
-            font-size: 0.7rem;
-            letter-spacing: 5px;
-            color: var(--gold);
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            font-size: 0.95rem;
-            font-style: italic;
-            color: var(--sage);
-            font-family: 'Cormorant Garamond', serif;
-            margin-top: 5px;
-        }
-
-        /* 3. Search Section */
-        .search-section {
-            max-width: 900px;
-            margin: -60px auto 0;
-            padding: 0 20px;
-        }
-
-        .search-bar-wrapper {
-            background: white;
-            display: flex;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .search-field {
-            flex-grow: 1;
-            border: none;
-            padding: 20px 25px;
-            font-family: inherit;
-            font-size: 1rem;
-            outline: none;
-        }
-
-        .search-trigger {
-            background: var(--forest);
-            color: white;
-            border: none;
-            padding: 0 40px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: background 0.3s;
-            white-space: nowrap;
-        }
-
-        .search-trigger:hover {
-            background: #25554a;
-        }
-
-        /* Filter toggle link */
-        .filter-toggle {
-            text-align: right;
-            margin-top: 10px;
-        }
-
-        .filter-toggle button {
-            background: none;
-            border: none;
-            color: var(--sage);
-            font-family: inherit;
-            font-size: 0.75rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            cursor: pointer;
-            padding: 4px 0;
-            border-bottom: 1px solid transparent;
-            transition: 0.3s;
-        }
-
-        .filter-toggle button:hover {
-            color: var(--forest);
-            border-bottom-color: var(--gold);
-        }
-
-        /* Filter panel */
-        .filter-panel {
-            background: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-            border-radius: 2px;
-            margin-top: 8px;
-            overflow: hidden;
-            max-height: 0;
-            transition: max-height 0.4s ease, padding 0.3s ease;
-        }
-
-        .filter-panel.open {
-            max-height: 300px;
-        }
-
-        .filter-panel-inner {
-            padding: 24px 28px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px 24px;
-        }
-
-        .filter-group label {
-            display: block;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--sage);
-            margin-bottom: 6px;
-        }
-
-        .filter-group select {
-            width: 100%;
-            border: 1px solid #e8e4dc;
-            background: var(--parchment);
-            padding: 9px 12px;
-            font-family: inherit;
-            font-size: 0.85rem;
-            color: var(--text);
-            outline: none;
-            border-radius: 2px;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237b8d7e'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-        }
-
-        .filter-actions {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            padding-top: 4px;
-        }
-
-        .filter-clear {
-            background: none;
-            border: 1px solid #ddd;
-            color: var(--sage);
-            font-family: inherit;
-            font-size: 0.7rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            padding: 8px 20px;
-            cursor: pointer;
-            border-radius: 2px;
-            transition: 0.3s;
-        }
-
-        .filter-clear:hover {
-            border-color: var(--sage);
-            color: var(--text);
-        }
-
-        /* Active filter chips */
-        .active-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 14px;
-            min-height: 0;
-        }
-
-        .filter-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--forest);
-            color: white;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 5px 12px;
-            border-radius: 20px;
-        }
-
-        .filter-chip button {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.7);
-            cursor: pointer;
-            font-size: 0.85rem;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .filter-chip button:hover { color: white; }
-
-        /* 4. Results count */
-        .results-meta {
-            max-width: 1400px;
-            margin: 28px auto 10px;
-            padding: 0 5%;
-            font-size: 0.75rem;
-            color: var(--sage);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            min-height: 20px;
-        }
-
-        /* 5. Catalogue Grid */
-        .catalogue-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 350px));
-            gap: 50px;
-            padding: 20px 5% 100px;
-            justify-content: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .plant-card {
-            background: white;
-            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-        }
-
-        .plant-card:hover {
-            transform: translateY(-12px);
-        }
-
-        .image-wrapper {
-            position: relative;
-            height: 350px;
-            background: #f4f1ec;
-            overflow: hidden;
-        }
-
-        .image-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: grayscale(10%) sepia(5%);
-            transition: transform 1s ease;
-        }
-
-        .plant-card:hover .image-wrapper img {
-            transform: scale(1.08);
-        }
-
-        .plant-info {
-            padding: 30px 20px;
-            text-align: center;
-        }
-
-        .plant-info h3 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.6rem;
-            margin: 0 0 5px;
-            color: var(--forest);
-        }
-
-        .scientific-name {
-            font-style: italic;
-            font-size: 0.85rem;
-            color: var(--sage);
-            margin-bottom: 5px;
-        }
-
-        .region-tag {
-            font-size: 0.7rem;
-            color: var(--gold);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        /* Extra filter metadata badges on search result cards */
-        .plant-meta {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 16px;
-        }
-
-        .meta-badge {
-            font-size: 0.62rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            padding: 3px 10px;
-            border: 1px solid #e8e4dc;
-            color: var(--sage);
-            border-radius: 20px;
-        }
-
-        .wishlist-action {
-            background: none;
-            border: none;
-            color: var(--forest);
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            cursor: pointer;
-            font-weight: 600;
-            padding: 10px;
-            border-bottom: 1px solid var(--gold);
-            transition: 0.3s;
-        }
-
-        .wishlist-action:hover {
-            background: var(--forest);
-            color: white;
-            border-bottom-color: var(--forest);
-        }
-
-        .status-msg {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 100px;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.5rem;
-            color: var(--sage);
-        }
+        :root { --forest: #1a3c34; --sage: #7b8d7e; --parchment: #f9f7f2; --gold: #c5a059; --text: #2c2c2c; }
+        body { margin: 0; font-family: 'Montserrat', sans-serif; background-color: var(--parchment); color: var(--text); line-height: 1.6; }
+        .glass-nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: white; border-bottom: 1px solid rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--forest); text-decoration: none; letter-spacing: 1px; font-weight: 600; }
+        .nav-right { display: flex; align-items: center; }
+        .nav-cta { padding: 10px 25px; border: 1px solid var(--forest); color: var(--forest); text-decoration: none; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; transition: 0.4s; }
+        .nav-cta:hover { background: var(--forest); color: white; }
+        #welcome-msg { margin-right: 20px; font-size: 0.8rem; color: var(--sage); font-weight: 500; }
+        .hero-header { text-align: center; padding: 100px 20px 140px; background: linear-gradient(to bottom, rgba(26, 60, 52, 0.05), transparent); }
+        .hero-header h1 { font-family: 'Cormorant Garamond', serif; font-size: 4.5rem; font-weight: 600; margin: 0; color: var(--forest); }
+        .subtitle { font-size: 0.95rem; font-style: italic; color: var(--sage); font-family: 'Cormorant Garamond', serif; margin-top: 5px; }
+        .search-section { max-width: 900px; margin: -60px auto 0; padding: 0 20px; }
+        .search-bar-wrapper { background: white; display: flex; box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-radius: 2px; overflow: hidden; }
+        .search-field { flex-grow: 1; border: none; padding: 20px 25px; font-family: inherit; font-size: 1rem; outline: none; }
+        .search-trigger { background: var(--forest); color: white; border: none; padding: 0 40px; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; cursor: pointer; }
+        .search-trigger:hover { background: #25554a; }
+        .filter-toggle { text-align: right; margin-top: 10px; }
+        .filter-toggle button { background: none; border: none; color: var(--sage); font-family: inherit; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; padding: 4px 0; }
+        .filter-panel { background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.06); margin-top: 8px; overflow: hidden; max-height: 0; transition: max-height 0.4s ease; }
+        .filter-panel.open { max-height: 300px; }
+        .filter-panel-inner { padding: 24px 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px 24px; }
+        .filter-group label { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--sage); margin-bottom: 6px; }
+        .filter-group select, .filter-group input { width: 100%; border: 1px solid #e8e4dc; background: var(--parchment); padding: 9px 12px; font-family: inherit; font-size: 0.85rem; color: var(--text); outline: none; box-sizing: border-box; }
+        .filter-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+        .filter-clear { background: none; border: 1px solid #ddd; color: var(--sage); font-family: inherit; font-size: 0.7rem; text-transform: uppercase; padding: 8px 20px; cursor: pointer; }
+        .results-meta { max-width: 1400px; margin: 28px auto 10px; padding: 0 5%; font-size: 0.75rem; color: var(--sage); text-transform: uppercase; min-height: 20px; }
+        .catalogue-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 350px)); gap: 50px; padding: 20px 5% 100px; justify-content: center; max-width: 1400px; margin: 0 auto; }
+        .plant-card { background: white; transition: transform 0.6s; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .plant-card:hover { transform: translateY(-12px); }
+        .image-wrapper { position: relative; height: 350px; background: #f4f1ec; overflow: hidden; }
+        .image-wrapper img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(10%) sepia(5%); }
+        .plant-info { padding: 30px 20px; text-align: center; }
+        .plant-info h3 { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; margin: 0 0 5px; color: var(--forest); }
+        .scientific-name { font-style: italic; font-size: 0.85rem; color: var(--sage); margin-bottom: 5px; }
+        .region-tag { font-size: 0.7rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        .plant-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+        .meta-badge { font-size: 0.62rem; text-transform: uppercase; padding: 3px 10px; border: 1px solid #e8e4dc; color: var(--sage); border-radius: 20px; }
+        .wishlist-action { background: none; border: none; color: var(--forest); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px; cursor: pointer; font-weight: 600; padding: 10px; border-bottom: 1px solid var(--gold); }
+        .wishlist-action:hover { background: var(--forest); color: white; }
+        .status-msg { grid-column: 1 / -1; text-align: center; padding: 100px; font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--sage); }
     </style>
 </head>
 <body>
@@ -418,635 +59,355 @@
 </nav>
 
 <header class="hero-header">
-    <div class="hero-content">
-        <!-- <p class="pre-title">EST. 2026</p> --> 
-        <h1>Catalogue</h1>
-        <p class="subtitle">Curated Botanicals for the Modern Collector</p>
-    </div>
+    <h1>Catalogue</h1>
+    <p class="subtitle">Curated Botanicals for the Modern Collector</p>
 </header>
 
 <section class="search-section">
-    <!-- Name search bar -->
     <div class="search-bar-wrapper">
         <input type="text" id="search-input" class="search-field" placeholder="Search by specimen name...">
         <button onclick="performSearch()" class="search-trigger">Explore</button>
     </div>
-
-    <!-- Toggle filters -->
     <div class="filter-toggle">
         <button onclick="toggleFilters()" id="filter-toggle-btn">⚙ Filters</button>
     </div>
-
-    <!-- Filter panel (hidden by default) -->
     <div class="filter-panel" id="filter-panel">
-    <div class="filter-panel-inner">
-        <div class="filter-group">
-            <label>Care Level</label>
-            <select id="filter-care">
-                <option value="">Any Level</option>
-                <option>Low</option>
-                <option>Medium</option>
-                <option>Moderate</option>
-                <option>High</option>
-                <option>Easy</option>
-            </select>
-        </div>
-
-        <div class="filter-group">
-            <label>Watering</label>
-            <select id="filter-watering">
-                <option value="">Any</option>
-                <option>Minimum</option>
-                <option>Average</option>
-                <option>Frequent</option>
-            </select>
-        </div>
-
-        <div class="filter-group">
-            <label>Origin</label>
-            <input type="text" id="filter-origin" placeholder="e.g. Japan, China..." style="width:100%; border:1px solid #e8e4dc; background:var(--parchment); padding:9px 12px; font-family:inherit; font-size:0.85rem; color:var(--text); outline:none; border-radius:2px;">
-        </div>
-
-        <div class="filter-actions">
-            <button class="filter-clear" onclick="clearFilters()">Clear Filters</button>
-        </div>
-    </div>
-    </div>
-    <!-- Active filter chips (shown below the panel) -->
-    <div class="active-filters" id="active-filters"></div>
-</section>
-<!-- My Collection link (visible only when logged in) -->
-<div id="collection-bar" style="display:none; max-width:900px; margin:18px auto 0; padding:0 20px;">
-    <a href="collection.html" class="nav-cta" style="display:inline-block; padding:10px 28px; border:1px solid var(--forest); color:var(--forest); text-decoration:none; font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; transition:0.4s;" onmouseover="this.style.background='#1a3c34';this.style.color='white';" onmouseout="this.style.background='';this.style.color='var(--forest)';">View My Wishlist🌿</a>
-</div>
-
-<!-- Admin Panel (hidden by default, shown only for admins) -->
-<div id="admin-panel" style="display:none;">
-    <style>
-        .admin-bar {
-            max-width: 900px;
-            margin: 30px auto 0;
-            padding: 0 20px;
-        }
-        .admin-toggle-btn {
-            background: none;
-            border: 1px solid var(--gold);
-            color: var(--forest);
-            font-family: inherit;
-            font-size: 0.75rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            padding: 8px 20px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .admin-toggle-btn:hover {
-            background: var(--forest);
-            color: white;
-            border-color: var(--forest);
-        }
-        .admin-drawer {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 20px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
-        }
-        .admin-drawer.open {
-          max-height: 1200px;
-        }
-        .admin-drawer-inner {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            padding: 20px 0;
-        }
-        .admin-form-card {
-            flex: 1;
-            min-width: 280px;
-            background: white;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-        }
-        .admin-form-card h3 {
-            font-family: 'Cormorant Garamond', serif;
-            color: var(--forest);
-            font-size: 1.3rem;
-            margin: 0 0 16px;
-        }
-        .admin-form-card label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--sage);
-            margin-bottom: 4px;
-            display: block;
-        }
-        .admin-form-card input[type="text"] {
-            width: 100%;
-            border: 1px solid #e8e4dc;
-            background: var(--parchment);
-            padding: 9px 12px;
-            font-family: inherit;
-            font-size: 0.85rem;
-            color: var(--text);
-            outline: none;
-            box-sizing: border-box;
-            margin-bottom: 12px;
-        }
-        .admin-form-card input[type="text"]:focus {
-            border-color: var(--sage);
-        }
-        .admin-submit-btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: inherit;
-        }
-        .btn-add {
-            background: var(--forest);
-            color: white;
-        }
-        .btn-add:hover { background: #25554a; }
-        .btn-remove {
-            background: #8b3a3a;
-            color: white;
-        }
-        .btn-remove:hover { background: #a34a4a; }
-        .admin-msg {
-            max-width: 900px;
-            margin: 10px auto 0;
-            padding: 0 20px;
-            font-size: 0.8rem;
-            color: var(--forest);
-            text-align: center;
-            min-height: 20px;
-        }
-    .admin-form-card select {
-    width: 100%;
-    border: 1px solid #e8e4dc;
-    background: var(--parchment);
-    padding: 9px 12px;
-    font-family: inherit;
-    font-size: 0.85rem;
-    color: var(--text);
-    outline: none;
-    box-sizing: border-box;
-    margin-bottom: 12px;
-    cursor: pointer;
-}
-
-    </style>
-
-    <div class="admin-bar">
-        <button class="admin-toggle-btn" onclick="toggleAdmin()" id="admin-toggle-btn">🌿 Admin Tools</button>
-    </div>
-    <div class="admin-drawer" id="admin-drawer">
-        <div class="admin-drawer-inner">
-            <div class="admin-form-card">
-                <h3>Add Plant</h3>
-                <label>Common Name</label>
-                <input type="text" id="admin-common">
-                <label>Scientific Name</label>
-                <input type="text" id="admin-sci">
-                <label>Family</label>
-                <input type="text" id="admin-family">
-                <label>Genus</label>
-                <input type="text" id="admin-genus">
-                <label>Species Epithet</label>
-                <input type="text" id="admin-species">
+        <div class="filter-panel-inner">
+            <div class="filter-group">
                 <label>Care Level</label>
-                <select id="admin-care">
-                    <option value="">— Select —</option>
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>Moderate</option>
-                    <option>High</option>
-                    <option>Easy</option>
+                <select id="filter-care">
+                    <option value="">Any Level</option>
+                    <option>Low</option><option>Medium</option><option>Moderate</option><option>High</option><option>Easy</option>
                 </select>
-                <label>Watering</label>
-                <select id="admin-watering">
-                    <option value="">— Select —</option>
-                    <option>Minimum</option>
-                    <option>Average</option>
-                    <option>Frequent</option>
-                </select>
-                <label>Origin</label>
-                <input type="text" id="admin-origin" placeholder="e.g. Japan, China...">
-                <label>Description</label>
-                <textarea id="admin-desc" placeholder="Brief description of the plant..." style="width:100%; border:1px solid #e8e4dc; background:var(--parchment); padding:9px 12px; font-family:inherit; font-size:0.85rem; color:var(--text); outline:none; box-sizing:border-box; margin-bottom:12px; resize:vertical; min-height:60px;"></textarea>
-                <button class="admin-submit-btn btn-add" onclick="adminAdd()">Add Plant</button>
             </div>
-
+            <div class="filter-group">
+                <label>Watering</label>
+                <select id="filter-watering">
+                    <option value="">Any</option>
+                    <option>Minimum</option><option>Average</option><option>Frequent</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Origin</label>
+                <input type="text" id="filter-origin" placeholder="e.g. Japan, China...">
+            </div>
+            <div class="filter-actions">
+                <button class="filter-clear" onclick="clearFilters()">Clear Filters</button>
+            </div>
         </div>
     </div>
-    <div class="admin-msg" id="admin-msg"></div>
+</section>
+
+<div id="collection-bar" style="display:none; max-width:900px; margin:18px auto 0; padding:0 20px;">
+    <a href="collection.html" class="nav-cta" style="display:inline-block;">View My Wishlist 🌿</a>
 </div>
-<!-- Results count line -->
+
+<div id="admin-panel" style="display:none; max-width:900px; margin:30px auto 0; padding:0 20px;">
+    <button class="nav-cta" onclick="toggleAdmin()" id="admin-toggle-btn" style="border-color:var(--gold);">🌿 Admin Tools</button>
+    <div id="admin-drawer" style="max-height:0; overflow:hidden; transition:max-height 0.4s;">
+        <div style="background:white; padding:24px; margin-top:20px; box-shadow:0 10px 30px rgba(0,0,0,0.06);">
+            <h3 style="font-family:'Cormorant Garamond',serif; color:var(--forest); margin-top:0;">Add Plant</h3>
+            <input type="text" id="admin-common" placeholder="Common Name" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box;">
+            <input type="text" id="admin-sci" placeholder="Scientific Name" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box;">
+            <input type="text" id="admin-family" placeholder="Family" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box;">
+            <input type="text" id="admin-genus" placeholder="Genus" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box;">
+            <input type="text" id="admin-species" placeholder="Species Epithet" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box;">
+            <select id="admin-care" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box;"><option value="">— Care Level —</option><option>Low</option><option>Medium</option><option>Moderate</option><option>High</option><option>Easy</option></select>
+            <select id="admin-watering" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box;"><option value="">— Watering —</option><option>Minimum</option><option>Average</option><option>Frequent</option></select>
+            <input type="text" id="admin-origin" placeholder="Origin" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box;">
+            <textarea id="admin-desc" placeholder="Description" style="width:100%; padding:9px; margin-bottom:10px; border:1px solid #e8e4dc; box-sizing:border-box; min-height:60px;"></textarea>
+            <label style="display:block; font-size:0.7rem; text-transform:uppercase; color:var(--sage); margin-bottom:6px;">Plant Image (optional)</label>
+            <div id="add-drop-zone" style="border:2px dashed #c5a059; padding:20px; text-align:center; cursor:pointer; margin-bottom:10px; background:var(--parchment);" onclick="document.getElementById('add-image-input').click()">
+                <span id="add-drop-text" style="color:var(--sage); font-size:0.85rem;">Drop image here or click to upload</span>
+            </div>
+            <input type="file" id="add-image-input" accept="image/jpeg,image/jpg,image/png" style="display:none;">
+            <input type="hidden" id="admin-image-url">
+            <button onclick="adminAdd()" style="width:100%; background:var(--forest); color:white; border:none; padding:10px; text-transform:uppercase; cursor:pointer;">Add Plant</button>
+        </div>
+    </div>
+    <div id="admin-msg" style="text-align:center; margin-top:10px; color:var(--forest);"></div>
+</div>
+
 <div class="results-meta" id="results-meta"></div>
+<main id="plants-display" class="catalogue-grid"></main>
 
-<main id="plants-display" class="catalogue-grid">
-
-
-</main>
-
-<!-- Refresh button -->
 <div style="text-align:center; margin: 0 0 40px;">
-    <button onclick="loadFeaturedPlants()" class="refresh-btn" id="refresh-btn" style="
-        background: none;
-        border: 1px solid var(--gold);
-        color: var(--forest);
-        font-family: inherit;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        padding: 12px 36px;
-        cursor: pointer;
-        transition: 0.3s;
-    ">↻ Refresh</button>
+    <button onclick="loadFeaturedPlants()" id="refresh-btn" style="background:none; border:1px solid var(--gold); color:var(--forest); font-family:inherit; font-size:0.75rem; text-transform:uppercase; letter-spacing:2px; padding:12px 36px; cursor:pointer;">↻ Refresh</button>
+</div>
+
+<div id="edit-plant-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:white; padding:30px; max-width:500px; width:90%; max-height:90vh; overflow-y:auto;">
+        <h2 style="font-family:'Cormorant Garamond',serif; color:var(--forest); margin-top:0;">Edit Plant</h2>
+        <input type="hidden" id="edit-old-name">
+        <label>Common Name</label><input type="text" id="edit-common" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;">
+        <label>Scientific Name</label><input type="text" id="edit-sci" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;">
+        <label>Family</label><input type="text" id="edit-family" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;">
+        <label>Genus</label><input type="text" id="edit-genus" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;">
+        <label>Species Epithet</label><input type="text" id="edit-species" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;">
+        <label>Care Level</label><select id="edit-care" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;"><option value="">—</option><option>Low</option><option>Medium</option><option>Moderate</option><option>High</option><option>Easy</option></select>
+        <label>Watering</label><select id="edit-watering" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;"><option value="">—</option><option>Minimum</option><option>Average</option><option>Frequent</option></select>
+        <label>Origin</label><input type="text" id="edit-origin" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;">
+        <label>Description</label><textarea id="edit-description" style="width:100%; padding:9px; margin-bottom:15px; box-sizing:border-box; min-height:100px;"></textarea>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button onclick="closeEditModal()" style="background:none; border:1px solid #ddd; padding:10px 20px; cursor:pointer;">Cancel</button>
+            <button onclick="saveEditedPlant()" style="background:var(--forest); color:white; border:none; padding:10px 20px; cursor:pointer;">Save</button>
+        </div>
+    </div>
 </div>
 
 <script>
+    fetch('/get-user').then(res => res.ok ? res.text() : null).then(username => {
+        if (username && username.trim()) {
+            document.getElementById('welcome-msg').innerText = `Welcome back, ${username}`;
+            document.getElementById('auth-link').innerText = "Logout";
+            document.getElementById('auth-link').href = "/logout";
+            document.getElementById('collection-bar').style.display = 'block';
+        }
+    }).catch(() => {});
 
-// ── Auth ──────────────────────────────────────────────────────────────────
-fetch('/get-user')
-.then(res => res.ok ? res.text() : null)
-.then(username => {
-const authLink = document.getElementById('auth-link');
-const welcomeMsg = document.getElementById('welcome-msg');
-if (username && username.trim() !== "") {
-welcomeMsg.innerText = `Welcome back, ${username}`;
-authLink.innerText = "Logout";
-authLink.href = "/logout";
-document.getElementById('collection-bar').style.display = 'block';
-}
-})
-.catch(() => {});
-
-// ── Load featured plants ───────────────────────────────────────────────────
-function loadFeaturedPlants() {
-    const display = document.getElementById('plants-display');
-    window.scrollTo({ top: 333, behavior: 'smooth'});
-    const btn = document.getElementById('refresh-btn');
-    display.innerHTML = "<div class='status-msg'>loading botanical archives...</div>";
-    if (btn) { btn.textContent = '↻ Refreshing...'; btn.disabled = true; }
-
-fetch('/featured-plants')
-.then(res => res.ok ? res.json() : [])
-.then(plants => {
-    display.innerHTML = '';
-    if (!plants || plants.length === 0) return;
-
-    plants.forEach(plant => {
-        const card = document.createElement('div');
-        card.className = 'plant-card';
-
+    function buildCard(plant) {
         let badges = '';
         if (plant[6]) badges += `<span class="meta-badge">🌱 ${plant[6]}</span>`;
         if (plant[7]) badges += `<span class="meta-badge">💧 ${plant[7]}</span>`;
         if (plant[8]) badges += `<span class="meta-badge">🌍 ${plant[8]}</span>`;
         if (plant[3]) badges += `<span class="meta-badge">🧬 ${plant[3]}</span>`;
-
         const imgFile = plant[10] || '';
-
-       card.innerHTML = `
+        const plantJson = JSON.stringify(plant).replace(/'/g, "&#39;");
+        return `
         <div class="image-wrapper" style="position:relative;">
-            <button class="remove-plant-btn" style="display:none; background:#8b3a3a; color:white; border:none; border-radius:50%; width:28px; height:28px; font-size:1.1rem; line-height:1; cursor:pointer; position:absolute; top:10px; right:10px; z-index:10;" onclick="removePlant('${plant[1]}', this)">−</button>
-            <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
+            <button class="remove-plant-btn" style="display:none; background:#8b3a3a; color:white; border:none; border-radius:50%; width:28px; height:28px; font-size:1.1rem; cursor:pointer; position:absolute; top:10px; right:10px; z-index:10;" onclick="removePlant('${plant[1]}', this)">−</button>
+           <img src="${imgFile.startsWith('/') ? imgFile : './imgs/' + encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
         </div>
         <div class="plant-info">
-            <h3>${plant[1] || "Unnamed Specimen"}</h3>
-            <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
+            <h3>${plant[1] || "Unnamed"}</h3>
+            <p class="scientific-name">${plant[2] || ""}</p>
             <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
             <div class="plant-meta">${badges}</div>
-            ${plant[9] ? `<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : '<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>'}
-            <button class="edit-desc-btn" style="display:none; background:none; border:1px solid var(--gold); color:var(--forest); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; padding:4px 12px; cursor:pointer; margin-bottom:8px;" onclick="editDescription('${plant[1]}', this)">Edit Description</button>
-            <button class="wishlist-action" onclick="addToCollection(${plant[0]}, '${plant[1]}', this)">Add to Wishlist</button>
-        </div>
-        `;
-        display.appendChild(card);
-    });
+            ${plant[9] ? `<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px;">${plant[9]}</p>` : '<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); font-style:italic;">No description yet</p>'}
+            <button class="edit-plant-btn" style="display:none; background:none; border:1px solid var(--gold); color:var(--forest); font-size:0.65rem; text-transform:uppercase; padding:4px 12px; cursor:pointer; margin:0 4px 8px;" onclick='editPlant(${plantJson}, this)'>Edit Plant</button>
+            <button class="wishlist-action" onclick="addToCollection(${plant[0]}, '${plant[1]}', this)">+ Add to Wishlist</button>
+        </div>`;
+    }
 
-    // Re-apply admin buttons if admin
-    fetch('/is-admin').then(r => r.ok ? r.text() : '').then(v => {
-        if (v === 'true') {
-            document.querySelectorAll('.edit-desc-btn').forEach(b => b.style.display = 'inline-block');
-            document.querySelectorAll('.remove-plant-btn').forEach(b => b.style.display = 'block');
-        }
-    });
-})
-.catch(() => {})
-.finally(() => {
-    if (btn) { btn.textContent = '↻ Refresh'; btn.disabled = false; }
-});
-}
-
-// Call on page load
-loadFeaturedPlants();
-
-// ── Filter panel toggle ───────────────────────────────────────────────────
-function toggleFilters() {
-const panel = document.getElementById('filter-panel');
-const btn   = document.getElementById('filter-toggle-btn');
-panel.classList.toggle('open');
-btn.textContent = panel.classList.contains('open') ? '✕ Close Filters' : '⚙ Filters';
-}
-
-function clearFilters() {
-document.getElementById('filter-care').value = '';
-document.getElementById('filter-watering').value = '';
-document.getElementById('filter-origin').value = '';
-updateChips();
-}
-
-['filter-care','filter-watering'].forEach(id => {
-document.getElementById(id).addEventListener('change', () => {
-updateChips();
-if (document.getElementById('search-input').value || hasActiveFilters()) {
-performSearch();
-}
-});
-});
-
-document.getElementById('filter-origin').addEventListener('keypress', (e) => {
-if (e.key === 'Enter') { updateChips(); performSearch(); }
-});
-
-function hasActiveFilters() {
-return document.getElementById('filter-care').value !== '' ||
-document.getElementById('filter-watering').value !== '' ||
-document.getElementById('filter-origin').value !== '';
-}
-
-// ── Active filter chips ───────────────────────────────────────────────────
-const filterLabels = {
-'filter-care':     'Care',
-'filter-watering': 'Watering',
-'filter-origin':   'Origin'
-};
-
-function updateChips() {
-const container = document.getElementById('active-filters');
-container.innerHTML = '';
-Object.entries(filterLabels).forEach(([id, label]) => {
-const val = document.getElementById(id).value;
-if (!val) return;
-const chip = document.createElement('span');
-chip.className = 'filter-chip';
-chip.innerHTML = `${label}: ${val} <button onclick="clearFilter('${id}')" title="Remove">×</button>`;
-container.appendChild(chip);
-});
-}
-
-function clearFilter(id) {
-document.getElementById(id).value = '';
-updateChips();
-if (document.getElementById('search-input').value || hasActiveFilters()) {
-performSearch();
-}
-}
-
-// ── Search ────────────────────────────────────────────────────────────────
-function performSearch() {
-const query     = document.getElementById('search-input').value;
-const careLevel = document.getElementById('filter-care').value;
-const watering  = document.getElementById('filter-watering').value;
-const origin    = document.getElementById('filter-origin').value;
-
-if (!query && !careLevel && !watering && !origin) return;
-
-const display = document.getElementById('plants-display');
-const meta    = document.getElementById('results-meta');
-display.innerHTML = "<div class='status-msg'>Consulting the botanical archives...</div>";
-meta.textContent  = '';
-
-const params = new URLSearchParams({ q: query });
-if (careLevel) params.set('care_level', careLevel);
-if (watering)  params.set('watering', watering);
-if (origin)    params.set('origin', origin);
-
-fetch(`/search-plants?${params.toString()}`)
-.then(response => {
-if (!response.ok) throw new Error("Connection lost");
-return response.json();
-})
-.then(plants => {
-display.innerHTML = '';
-
-if (!plants || plants.length === 0) {
-meta.textContent = '';
-display.innerHTML = "<div class='status-msg'>No specimens found matching your criteria.</div>";
-return;
-}
-
-meta.textContent = `${plants.length} specimen${plants.length !== 1 ? 's' : ''} found`;
-
-// plant[0]=id, [1]=common_name, [2]=sci_name, [3]=family, [4]=genus,
-// [5]=species_epithet, [6]=care_level, [7]=watering, [8]=origin, [9]=description
-plants.forEach(plant => {
-const card = document.createElement('div');
-card.className = 'plant-card';
-
-let badges = '';
-if (plant[6]) badges += `<span class="meta-badge">🌱 ${plant[6]}</span>`;
-if (plant[7]) badges += `<span class="meta-badge">💧 ${plant[7]}</span>`;
-if (plant[8]) badges += `<span class="meta-badge">🌍 ${plant[8]}</span>`;
-if (plant[3]) badges += `<span class="meta-badge">🧬 ${plant[3]}</span>`;
-
-const imgFile = plant[10] || '';
-
-card.innerHTML = `
-<div class="image-wrapper" style="position:relative;">
-    <button class="remove-plant-btn" style="display:none; background:#8b3a3a; color:white; border:none; border-radius:50%; width:28px; height:28px; font-size:1.1rem; line-height:1; cursor:pointer; position:absolute; top:10px; right:10px; z-index:10;" onclick="removePlant('${plant[1]}', this)">−</button>
-    <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
-</div>
-<div class="plant-info">
-    <h3>${plant[1] || "Unnamed Specimen"}</h3>
-    <p class="scientific-name">${plant[2] || "Species unclassified"}</p>
-    <span class="region-tag">Origin: ${plant[8] || "Unknown"}</span>
-    <div class="plant-meta">${badges}</div>
-    ${plant[9] ? `<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5;">${plant[9]}</p>` : '<p class="plant-desc" style="font-size:0.8rem; color:var(--sage); margin:0 0 12px; line-height:1.5; font-style:italic;">No description yet</p>'}
-    <button class="edit-desc-btn" style="display:none; background:none; border:1px solid var(--gold); color:var(--forest); font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; padding:4px 12px; cursor:pointer; margin-bottom:8px;" onclick="editDescription('${plant[1]}', this)">Edit Description</button>
-    <button class="wishlist-action" onclick="addToCollection(${plant[0]}, '${plant[1]}', this)">+ Add to Collection</button>
-</div>
-`;
-// Show edit buttons if admin
-display.appendChild(card);
-});
-// Show edit buttons if admin
-fetch('/is-admin').then(r => r.ok ? r.text() : '').then(v => {
-if (v === 'true') {
-    document.querySelectorAll('.edit-desc-btn').forEach(b => b.style.display = 'inline-block');
-    document.querySelectorAll('.remove-plant-btn').forEach(b => b.style.display = 'block');
-}
-});
-})
-.catch(() => {
-display.innerHTML = `<div class='status-msg' style='color:#a34a4a;'>Archive connection error. <br><small>Ensure back.java is active</small></div>`;
-});
-}
-
-document.getElementById("search-input").addEventListener("keypress", (e) => {
-if (e.key === "Enter") performSearch();
-});
-
-// ── Admin Panel ───────────────────────────────────────────────────────
-fetch('/is-admin')
-.then(res => res.ok ? res.text() : null)
-.then(val => {
-if (val === 'true') {
-
-document.getElementById('admin-panel').style.display = 'block';
-// Show edit buttons on all cards
-setTimeout(() => {
-    document.querySelectorAll('.edit-desc-btn').forEach(btn => btn.style.display = 'inline-block');
-    document.querySelectorAll('.remove-plant-btn').forEach(btn => btn.style.display = 'block');
-}, 500);
-}
-})
-.catch(() => {});
-
-function toggleAdmin() {
-const drawer = document.getElementById('admin-drawer');
-const btn = document.getElementById('admin-toggle-btn');
-drawer.classList.toggle('open');
-btn.textContent = drawer.classList.contains('open') ? '✕ Close Admin Tools' : '🌿 Admin Tools';
-}
-
-function adminAdd() {
-const form = new URLSearchParams();
-form.set('common_name', document.getElementById('admin-common').value);
-form.set('sci_name', document.getElementById('admin-sci').value);
-form.set('family', document.getElementById('admin-family').value);
-form.set('genus', document.getElementById('admin-genus').value);
-form.set('species_epithet', document.getElementById('admin-species').value);
-form.set('care_level', document.getElementById('admin-care').value);
-form.set('watering', document.getElementById('admin-watering').value);
-form.set('origin', document.getElementById('admin-origin').value);
-form.set('description', document.getElementById('admin-desc').value);
-
-fetch('/add-plant', { method: 'POST', body: form, redirect: 'manual' })
-.then(() => {
-document.getElementById('admin-msg').textContent = '✓ Plant added successfully';
-document.getElementById('admin-common').value = '';
-document.getElementById('admin-sci').value = '';
-document.getElementById('admin-family').value = '';
-document.getElementById('admin-genus').value = '';
-document.getElementById('admin-species').value = '';
-document.getElementById('admin-care').value = '';
-document.getElementById('admin-watering').value = '';
-document.getElementById('admin-origin').value = '';
-document.getElementById('admin-desc').value = '';
-setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
-})
-.catch(() => {
-document.getElementById('admin-msg').textContent = '✗ Failed to add plant';
-});
-}
-function editDescription(commonName, btn) {
-    const card = btn.closest('.plant-info');
-    const descP = card.querySelector('.plant-desc');
-    const oldText = descP.textContent;
-
-    descP.innerHTML = `<textarea style="width:100%; min-height:80px; border:1px solid #e8e4dc; background:var(--parchment); padding:8px; font-family:inherit; font-size:0.8rem; color:var(--text); resize:vertical;">${oldText}</textarea>
-    <div style="margin-top:6px; display:flex; gap:8px; justify-content:center;">
-        <button onclick="saveDescription('${commonName}', this)" style="background:var(--forest); color:white; border:none; padding:5px 14px; font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">Save</button>
-        <button onclick="cancelEdit(this, '${oldText}')" style="background:none; border:1px solid #ddd; color:var(--sage); padding:5px 14px; font-size:0.65rem; text-transform:uppercase; letter-spacing:1px; cursor:pointer;">Cancel</button>
-    </div>`;
-    btn.style.display = 'none';
-}
-
-function saveDescription(commonName, btn) {
-    const card = btn.closest('.plant-info');
-    const textarea = card.querySelector('textarea');
-    const newDesc = textarea.value;
-
-    const form = new URLSearchParams();
-    form.set('common_name', commonName);
-    form.set('description', newDesc);
-
-    fetch('/update-description', { method: 'POST', body: form })
-        .then(res => res.text())
-        .then(result => {
-            const descP = card.querySelector('.plant-desc');
-            descP.textContent = newDesc;
-            descP.style.fontStyle = 'normal';
-            card.querySelector('.edit-desc-btn').style.display = 'inline-block';
+    function applyAdminButtons() {
+        fetch('/is-admin').then(r => r.ok ? r.text() : '').then(v => {
+            if (v === 'true') {
+                document.querySelectorAll('.edit-desc-btn').forEach(b => b.style.display = 'inline-block');
+                document.querySelectorAll('.remove-plant-btn').forEach(b => b.style.display = 'block');
+                document.querySelectorAll('.edit-plant-btn').forEach(b => b.style.display = 'inline-block');
+            }
         });
+    }
+
+    function loadFeaturedPlants() {
+        const display = document.getElementById('plants-display');
+        window.scrollTo({ top: 333, behavior: 'smooth'});
+        display.innerHTML = "<div class='status-msg'>loading botanical archives...</div>";
+        fetch('/featured-plants').then(res => res.ok ? res.json() : []).then(plants => {
+            display.innerHTML = '';
+            if (!plants || plants.length === 0) return;
+            plants.forEach(plant => {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                card.innerHTML = buildCard(plant);
+                display.appendChild(card);
+            });
+            applyAdminButtons();
+        }).catch(() => {});
+    }
+    loadFeaturedPlants();
+
+    function toggleFilters() {
+        const panel = document.getElementById('filter-panel');
+        panel.classList.toggle('open');
+        document.getElementById('filter-toggle-btn').textContent = panel.classList.contains('open') ? '✕ Close Filters' : '⚙ Filters';
+    }
+
+    function clearFilters() {
+        document.getElementById('filter-care').value = '';
+        document.getElementById('filter-watering').value = '';
+        document.getElementById('filter-origin').value = '';
+    }
+
+    function hasActiveFilters() {
+        return document.getElementById('filter-care').value || document.getElementById('filter-watering').value || document.getElementById('filter-origin').value;
+    }
+
+    function performSearch() {
+        const query = document.getElementById('search-input').value;
+        const careLevel = document.getElementById('filter-care').value;
+        const watering = document.getElementById('filter-watering').value;
+        const origin = document.getElementById('filter-origin').value;
+        if (!query && !careLevel && !watering && !origin) return;
+        const display = document.getElementById('plants-display');
+        const meta = document.getElementById('results-meta');
+        display.innerHTML = "<div class='status-msg'>Consulting the botanical archives...</div>";
+        meta.textContent = '';
+        const params = new URLSearchParams({ q: query });
+        if (careLevel) params.set('care_level', careLevel);
+        if (watering) params.set('watering', watering);
+        if (origin) params.set('origin', origin);
+        fetch(`/search-plants?${params.toString()}`).then(r => r.json()).then(plants => {
+            display.innerHTML = '';
+            if (!plants || plants.length === 0) {
+                display.innerHTML = "<div class='status-msg'>No specimens found.</div>";
+                return;
+            }
+            meta.textContent = `${plants.length} specimen${plants.length !== 1 ? 's' : ''} found`;
+            plants.forEach(plant => {
+                const card = document.createElement('div');
+                card.className = 'plant-card';
+                card.innerHTML = buildCard(plant);
+                display.appendChild(card);
+            });
+            applyAdminButtons();
+        }).catch(() => {
+            display.innerHTML = `<div class='status-msg' style='color:#a34a4a;'>Connection error</div>`;
+        });
+    }
+
+    document.getElementById("search-input").addEventListener("keypress", (e) => { if (e.key === "Enter") performSearch(); });
+
+    fetch('/is-admin').then(res => res.ok ? res.text() : null).then(val => {
+        if (val === 'true') {
+            document.getElementById('admin-panel').style.display = 'block';
+            setTimeout(applyAdminButtons, 500);
+        }
+    }).catch(() => {});
+
+    function toggleAdmin() {
+        const drawer = document.getElementById('admin-drawer');
+        drawer.style.maxHeight = drawer.style.maxHeight === '1200px' ? '0' : '1200px';
+    }
+
+   function adminAdd() {
+    const form = new URLSearchParams();
+    form.set('common_name', document.getElementById('admin-common').value);
+    form.set('sci_name', document.getElementById('admin-sci').value);
+    form.set('family', document.getElementById('admin-family').value);
+    form.set('genus', document.getElementById('admin-genus').value);
+    form.set('species_epithet', document.getElementById('admin-species').value);
+    form.set('care_level', document.getElementById('admin-care').value);
+    form.set('watering', document.getElementById('admin-watering').value);
+    form.set('origin', document.getElementById('admin-origin').value);
+    form.set('description', document.getElementById('admin-desc').value);
+    form.set('image_url', document.getElementById('admin-image-url').value);
+    fetch('/add-plant', { method: 'POST', body: form }).then(() => {
+        document.getElementById('admin-msg').textContent = '✓ Plant added';
+        ['admin-common','admin-sci','admin-family','admin-genus','admin-species','admin-care','admin-watering','admin-origin','admin-desc','admin-image-url'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('add-drop-text').textContent = 'Drop image here or click to upload';
+        setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
+        loadFeaturedPlants();
+    });
 }
 
-function cancelEdit(btn, oldText) {
-    const card = btn.closest('.plant-info');
-    const descP = card.querySelector('.plant-desc');
-    descP.textContent = oldText;
-    card.querySelector('.edit-desc-btn').style.display = 'inline-block';
-}
-function removePlant(commonName, btn) {
-    if (!confirm('Remove ' + commonName + ' from the catalogue?')) return;
-    const form = new URLSearchParams();
-    form.set('common_name', commonName);
-    fetch('/remove-plant', { method: 'POST', body: form })
-        .then(res => res.text())
-        .then(result => {
+    function removePlant(commonName, btn) {
+        if (!confirm('Remove ' + commonName + '?')) return;
+        const form = new URLSearchParams();
+        form.set('common_name', commonName);
+        fetch('/remove-plant', { method: 'POST', body: form }).then(() => {
             const card = btn.closest('.plant-card');
             card.style.transition = 'opacity 0.3s';
             card.style.opacity = '0';
             setTimeout(() => card.remove(), 300);
-        })
-        .catch(() => alert('Failed to remove plant'));
-}
-function adminRemove() {
-const form = new URLSearchParams();
-form.set('common_name', document.getElementById('admin-remove-name').value);
+        });
+    }
 
-fetch('/remove-plant', { method: 'POST', body: form, redirect: 'manual' })
-.then(() => {
-document.getElementById('admin-msg').textContent = '✓ Plant removed successfully';
-document.getElementById('admin-remove-name').value = '';
-setTimeout(() => document.getElementById('admin-msg').textContent = '', 3000);
-})
-.catch(() => {
-document.getElementById('admin-msg').textContent = '✗ Failed to remove plant';
-});
-}
-
-// ── Add to Collection ─────────────────────────────────────────────────────
-function addToCollection(plantId, plantName, btn) {
-    const form = new URLSearchParams();
-    form.set('plant_id', plantId);
-
-    fetch('/add-to-collection', { method: 'POST', body: form })
-        .then(res => {
-            if (res.status === 401) {
-                // Not logged in — take them to sign in
-                window.location.href = '/signin.html';
-                return null;
-            }
+    function addToCollection(plantId, plantName, btn) {
+        const form = new URLSearchParams();
+        form.set('plant_id', plantId);
+        fetch('/add-to-collection', { method: 'POST', body: form }).then(res => {
+            if (res.status === 401) { window.location.href = '/signin.html'; return null; }
             return res.text();
-        })
-        .then(result => {
+        }).then(result => {
             if (!result) return;
-            if (result === 'added') {
-                btn.textContent = '✓ Saved';
-                btn.style.background = 'var(--forest)';
-                btn.style.color = 'white';
-                btn.disabled = true;
-            } else if (result === 'already') {
-                btn.textContent = '✓ In Collection';
-                btn.style.color = 'var(--sage)';
-                btn.disabled = true;
-            } else {
-                btn.textContent = '✗ Error';
-            }
-        })
-        .catch(() => { btn.textContent = '✗ Error'; });
-}</script>
+            if (result === 'added') { btn.textContent = '✓ Saved'; btn.style.background = 'var(--forest)'; btn.style.color = 'white'; btn.disabled = true; }
+            else if (result === 'already') { btn.textContent = '✓ In Collection'; btn.disabled = true; }
+        });
+    }
 
+    function editPlant(plant, btn) {
+        document.getElementById('edit-old-name').value = plant[1];
+        document.getElementById('edit-common').value = plant[1] || '';
+        document.getElementById('edit-sci').value = plant[2] || '';
+        document.getElementById('edit-family').value = plant[3] || '';
+        document.getElementById('edit-genus').value = plant[4] || '';
+        document.getElementById('edit-species').value = plant[5] || '';
+        document.getElementById('edit-care').value = plant[6] || '';
+        document.getElementById('edit-watering').value = plant[7] || '';
+        document.getElementById('edit-origin').value = plant[8] || '';
+        document.getElementById('edit-description').value = plant[9] || '';
+        document.getElementById('edit-plant-modal').style.display = 'flex';
+    }
+
+    function closeEditModal() {
+        document.getElementById('edit-plant-modal').style.display = 'none';
+    }
+
+    function saveEditedPlant() {
+        const form = new URLSearchParams();
+        form.set('old_common_name', document.getElementById('edit-old-name').value);
+        form.set('common_name', document.getElementById('edit-common').value);
+        form.set('sci_name', document.getElementById('edit-sci').value);
+        form.set('family', document.getElementById('edit-family').value);
+        form.set('genus', document.getElementById('edit-genus').value);
+        form.set('species_epithet', document.getElementById('edit-species').value);
+        form.set('care_level', document.getElementById('edit-care').value);
+        form.set('watering', document.getElementById('edit-watering').value);
+        form.set('origin', document.getElementById('edit-origin').value);
+        form.set('description', document.getElementById('edit-description').value);
+        fetch('/update-plant', { method: 'POST', body: form }).then(() => {
+            closeEditModal();
+            if (document.getElementById('search-input').value || hasActiveFilters()) performSearch();
+            else loadFeaturedPlants();
+        });
+    }
+
+// Image upload handler
+function setupImageUpload(dropZoneId, inputId, hiddenId, textId) {
+    const dropZone = document.getElementById(dropZoneId);
+    const input = document.getElementById(inputId);
+    const hidden = document.getElementById(hiddenId);
+    const text = document.getElementById(textId);
+
+    function uploadFile(file) {
+        if (!file.type.match(/^image\/(jpeg|jpg|png)$/)) {
+            text.textContent = '✗ Only JPG/PNG allowed';
+            return;
+        }
+        text.textContent = 'Uploading...';
+        const formData = new FormData();
+        formData.append('image', file);
+        fetch('/upload-image', { method: 'POST', body: formData })
+            .then(res => res.ok ? res.text() : Promise.reject())
+            .then(filename => {
+                hidden.value = filename;
+                text.textContent = '✓ ' + filename.split('/').pop();
+            })
+            .catch(() => { text.textContent = '✗ Upload failed'; });
+    }
+
+    input.addEventListener('change', e => {
+        if (e.target.files[0]) uploadFile(e.target.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropZone.style.background = '#f0eaea';
+    });
+
+    dropZone.addEventListener('dragleave', e => {
+        dropZone.style.background = 'var(--parchment)';
+    });
+
+    dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.style.background = 'var(--parchment)';
+        if (e.dataTransfer.files[0]) uploadFile(e.dataTransfer.files[0]);
+    });
+}
+
+setupImageUpload('add-drop-zone', 'add-image-input', 'admin-image-url', 'add-drop-text');
+</script>
 </body>
 </html>

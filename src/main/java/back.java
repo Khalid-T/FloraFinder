@@ -380,11 +380,38 @@ public class back {
             return "Plant not found: " + commonName;
         }
     }
+    public String updatePlant(String oldCommonName, String newCommonName, String sciName, String family,
+                              String genus, String speciesEpithet, String careLevel, String watering,
+                              String origin, String description) throws SQLException {
+        if (is_admin == false) {
+            return "login as admin first";
+        }
+        PreparedStatement stmt = conn.prepareStatement(
+                "UPDATE plants SET common_name = ?, sci_name = ?, family = ?, genus = ?, species_epithet = ?, " +
+                        "care_level = ?, watering = ?, origin = ?, description = ? WHERE common_name = ?");
+        stmt.setString(1, newCommonName);
+        stmt.setString(2, sciName);
+        stmt.setString(3, family);
+        stmt.setString(4, genus);
+        stmt.setString(5, speciesEpithet);
+        stmt.setString(6, careLevel);
+        stmt.setString(7, watering);
+        stmt.setString(8, origin);
+        stmt.setString(9, description);
+        stmt.setString(10, oldCommonName);
+        int updated = stmt.executeUpdate();
+        stmt.close();
+        if (updated > 0) {
+            return "Plant updated";
+        } else {
+            return "Plant not found";
+        }
+    }
 
     // ------------------------------------ add plants to database
     // --------------------------
     public String add(String common_name, String sci_name, String family, String genus, String species_epithet,
-            String care_level, String watering, String origin, String description) throws SQLException {
+                      String care_level, String watering, String origin, String description, String image_url) throws SQLException {
 
         if (is_admin == false) {
             System.out.println("[log] login first");
@@ -392,7 +419,7 @@ public class back {
         }
 
         PreparedStatement added = conn.prepareStatement(
-                "INSERT INTO plants (common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                "INSERT INTO plants (common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
         added.setString(1, common_name);
         added.setString(2, sci_name);
@@ -403,13 +430,13 @@ public class back {
         added.setString(7, watering);
         added.setString(8, origin);
         added.setString(9, description);
+        added.setString(10, image_url);
         added.executeUpdate();
 
         System.out.println("[log] added " + common_name + " to the database");
 
         added.close();
         return "\nadded " + common_name + " to the list";
-
     }
 
     // -------------------- searchWithFilters
@@ -473,10 +500,13 @@ public class back {
 
         // start the Javalin Server
         Javalin server = Javalin.create(config -> {
-            // Tells Javalin to look in src/main/resources/static for HTML/CSS
             config.staticFiles.add("/static");
+            config.staticFiles.add(staticFiles -> {
+                staticFiles.directory = "./uploads";
+                staticFiles.location = io.javalin.http.staticfiles.Location.EXTERNAL;
+                staticFiles.hostedPath = "/uploads";
+            });
         }).start(8080);
-
         System.out.println("--- Flora Catalogue Server Running ---");
         System.out.println("Go to: http://localhost:8080/signin.html");
 
@@ -510,8 +540,9 @@ public class back {
             String watering = ctx.formParam("watering");
             String origin = ctx.formParam("origin");
             String description = ctx.formParam("description");
+            String imageUrl = ctx.formParam("image_url");
             String result = appLogic.add(commonName, sciName, family, genus, speciesEpithet, careLevel, watering,
-                    origin, description);
+                    origin, description, imageUrl);
             ctx.result(result);
         });
 
@@ -527,6 +558,45 @@ public class back {
             String description = ctx.formParam("description");
             String result = appLogic.updateDescription(commonName, description);
             ctx.result(result);
+        });
+        server.post("/update-plant", ctx -> {
+            String oldName = ctx.formParam("old_common_name");
+            String newName = ctx.formParam("common_name");
+            String sciName = ctx.formParam("sci_name");
+            String family = ctx.formParam("family");
+            String genus = ctx.formParam("genus");
+            String speciesEpithet = ctx.formParam("species_epithet");
+            String careLevel = ctx.formParam("care_level");
+            String watering = ctx.formParam("watering");
+            String origin = ctx.formParam("origin");
+            String description = ctx.formParam("description");
+            String result = appLogic.updatePlant(oldName, newName, sciName, family, genus, speciesEpithet, careLevel, watering, origin, description);
+            ctx.result(result);
+        });
+        server.post("/upload-image", ctx -> {
+            if (!appLogic.isAdmin()) {
+                ctx.status(401).result("admin only");
+                return;
+            }
+            var file = ctx.uploadedFile("image");
+            if (file == null) {
+                ctx.status(400).result("no file");
+                return;
+            }
+            String ext = file.extension().toLowerCase();
+            if (!ext.equals(".jpg") && !ext.equals(".jpeg") && !ext.equals(".png")) {
+                ctx.status(400).result("only jpg/png allowed");
+                return;
+            }
+            String safeName = file.filename().replaceAll("[^a-zA-Z0-9._-]", "_");
+            String filename = System.currentTimeMillis() + "_" + safeName;
+            java.nio.file.Path dest = java.nio.file.Paths.get("./uploads/" + filename);
+            java.nio.file.Files.createDirectories(dest.getParent());
+            try (var in = file.content()) {
+                java.nio.file.Files.copy(in, dest);
+            }
+            System.out.println("[log] uploaded image: " + filename);
+            ctx.result("/uploads/" + filename);
         });
         server.get("/search-plants", ctx -> {
             String query = ctx.queryParam("q");
