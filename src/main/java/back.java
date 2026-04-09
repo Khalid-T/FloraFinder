@@ -510,6 +510,26 @@ public class back {
         System.out.println("--- Flora Catalogue Server Running ---");
         System.out.println("Go to: http://localhost:8080/signin.html");
 
+        // ================= ADMIN DASHBOARD ROUTES =================
+
+// GET ALL USERS
+        server.get("/getUsers", ctx -> {
+            ctx.result(appLogic.getAllUsers());
+        });
+
+// PROMOTE USER
+        server.get("/promote", ctx -> {
+            String username = ctx.queryParam("username");
+            ctx.result(appLogic.promote(username));
+        });
+
+// DELETE USER
+        server.get("/removeUser", ctx -> {
+            String username = ctx.queryParam("username");
+            ctx.result(appLogic.removeusr(username));
+        });
+
+
         // handle the Login Form Submission
         server.post("/login-endpoint", ctx -> {
             System.out.println(">>> LOGIN ATTEMPT RECEIVED <<<");
@@ -808,6 +828,10 @@ public class back {
                 ctx.redirect("/reset.html?error=Database error");
             }
         });
+
+
     }
+
+
 
 }

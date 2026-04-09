@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --forest: #1a3c34;
+            --sage: #7b8d7e;
+            --parchment: #f9f7f2;
+            --gold: #c5a059;
+            --text: #2c2c2c;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--parchment);
+            color: var(--text);
+        }
+
+        .glass-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 5%;
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            color: var(--forest);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--forest);
+        }
+
+        .user-card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        button {
+            background: var(--forest);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin-left: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+        }
+
+        button.delete {
+            background: #8b3a3a;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="glass-nav">
+    <a href="index.html" class="nav-logo">FloraFinder</a>
+</nav>
+
+<div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <button onclick="loadUsers()">Load Users</button>
+
+    <div id="users"></div>
+</div>
+
+<script>
+    async function loadUsers() {
+        const res = await fetch("/getUsers");
+        const text = await res.text();
+
+        const usersDiv = document.getElementById("users");
+        usersDiv.innerHTML = "";
+
+        const lines = text.trim().split("\n");
+
+        lines.forEach(line => {
+            const parts = line.split("\t");
+
+            const id = parts[0];
+            const username = parts[1];
+            const role = parts[2];
+
+            const div = document.createElement("div");
+            div.className = "user-card";
+
+            div.innerHTML = `
+                <span>${username} (${role})</span>
+                <div>
+                    <button onclick="promoteUser('${username}')">Promote</button>
+                    <button class="delete" onclick="deleteUser('${username}')">Delete</button>
+                </div>
+            `;
+
+            usersDiv.appendChild(div);
+        });
+    }
+
+    async function promoteUser(username) {
+        const res = await fetch("/promote?username=" + username);
+        alert(await res.text());
+        loadUsers();
+    }
+
+    async function deleteUser(username) {
+        const res = await fetch("/removeUser?username=" + username);
+        alert(await res.text());
+        loadUsers();
+    }
+</script>
+
+</body>
+</html>

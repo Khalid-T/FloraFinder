@@ -99,11 +99,14 @@
 </section>
 
 <div id="collection-bar" style="display:none; max-width:900px; margin:18px auto 0; padding:0 20px;">
-    <a href="collection.html" class="nav-cta" style="display:inline-block;">View My Wishlist 🌿</a>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="collection.html" class="nav-cta">View My Wishlist </a>
+        <a href="admindash.html" class="nav-cta" style="border-color:var(--gold);">Admin Dashboard ⚙</a>
+    </div>
 </div>
 
 <div id="admin-panel" style="display:none; max-width:900px; margin:30px auto 0; padding:0 20px;">
-    <button class="nav-cta" onclick="toggleAdmin()" id="admin-toggle-btn" style="border-color:var(--gold);">🌿 Admin Tools</button>
+    <button class="nav-cta" onclick="toggleAdmin()" id="admin-toggle-btn" style="border-color:var(--gold);"> Admin Tools</button>
     <div id="admin-drawer" style="max-height:0; overflow:hidden; transition:max-height 0.4s;">
         <div style="background:white; padding:24px; margin-top:20px; box-shadow:0 10px 30px rgba(0,0,0,0.06);">
             <h3 style="font-family:'Cormorant Garamond',serif; color:var(--forest); margin-top:0;">Add Plant</h3>
