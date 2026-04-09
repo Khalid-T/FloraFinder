@@ -382,13 +382,13 @@ public class back {
     }
     public String updatePlant(String oldCommonName, String newCommonName, String sciName, String family,
                               String genus, String speciesEpithet, String careLevel, String watering,
-                              String origin, String description) throws SQLException {
+                              String origin, String description, String imageUrl) throws SQLException {
         if (is_admin == false) {
             return "login as admin first";
         }
         PreparedStatement stmt = conn.prepareStatement(
                 "UPDATE plants SET common_name = ?, sci_name = ?, family = ?, genus = ?, species_epithet = ?, " +
-                        "care_level = ?, watering = ?, origin = ?, description = ? WHERE common_name = ?");
+                        "care_level = ?, watering = ?, origin = ?, description = ?, image_url = ? WHERE common_name = ?");
         stmt.setString(1, newCommonName);
         stmt.setString(2, sciName);
         stmt.setString(3, family);
@@ -398,7 +398,8 @@ public class back {
         stmt.setString(7, watering);
         stmt.setString(8, origin);
         stmt.setString(9, description);
-        stmt.setString(10, oldCommonName);
+        stmt.setString(10, imageUrl);
+        stmt.setString(11, oldCommonName);
         int updated = stmt.executeUpdate();
         stmt.close();
         if (updated > 0) {
@@ -407,7 +408,6 @@ public class back {
             return "Plant not found";
         }
     }
-
     // ------------------------------------ add plants to database
     // --------------------------
     public String add(String common_name, String sci_name, String family, String genus, String species_epithet,
@@ -570,7 +570,8 @@ public class back {
             String watering = ctx.formParam("watering");
             String origin = ctx.formParam("origin");
             String description = ctx.formParam("description");
-            String result = appLogic.updatePlant(oldName, newName, sciName, family, genus, speciesEpithet, careLevel, watering, origin, description);
+            String imageUrl = ctx.formParam("image_url");
+            String result = appLogic.updatePlant(oldName, newName, sciName, family, genus, speciesEpithet, careLevel, watering, origin, description, imageUrl);
             ctx.result(result);
         });
         server.post("/upload-image", ctx -> {

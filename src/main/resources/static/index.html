@@ -148,6 +148,17 @@
         <label>Watering</label><select id="edit-watering" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;"><option value="">—</option><option>Minimum</option><option>Average</option><option>Frequent</option></select>
         <label>Origin</label><input type="text" id="edit-origin" style="width:100%; padding:9px; margin-bottom:10px; box-sizing:border-box;">
         <label>Description</label><textarea id="edit-description" style="width:100%; padding:9px; margin-bottom:15px; box-sizing:border-box; min-height:100px;"></textarea>
+        <label>Plant Image</label>
+        <div id="edit-image-preview" style="margin-bottom:10px; text-align:center;">
+            <img id="edit-current-img" src="" style="max-width:100%; max-height:200px; display:none;">
+            <div id="edit-no-img" style="color:var(--sage); font-style:italic; padding:20px;">No image</div>
+        </div>
+        <button type="button" onclick="removeEditImage()" style="background:#8b3a3a; color:white; border:none; padding:6px 14px; cursor:pointer; font-size:0.7rem; text-transform:uppercase; margin-bottom:10px;">Remove Image</button>
+        <div id="edit-drop-zone" style="border:2px dashed #c5a059; padding:20px; text-align:center; cursor:pointer; margin-bottom:15px; background:var(--parchment);" onclick="document.getElementById('edit-image-input').click()">
+            <span id="edit-drop-text" style="color:var(--sage); font-size:0.85rem;">Drop new image or click to upload</span>
+        </div>
+        <input type="file" id="edit-image-input" accept="image/jpeg,image/jpg,image/png" style="display:none;">
+        <input type="hidden" id="edit-image-url">
         <div style="display:flex; gap:10px; justify-content:flex-end;">
             <button onclick="closeEditModal()" style="background:none; border:1px solid #ddd; padding:10px 20px; cursor:pointer;">Cancel</button>
             <button onclick="saveEditedPlant()" style="background:var(--forest); color:white; border:none; padding:10px 20px; cursor:pointer;">Save</button>
@@ -326,19 +337,41 @@
         });
     }
 
-    function editPlant(plant, btn) {
-        document.getElementById('edit-old-name').value = plant[1];
-        document.getElementById('edit-common').value = plant[1] || '';
-        document.getElementById('edit-sci').value = plant[2] || '';
-        document.getElementById('edit-family').value = plant[3] || '';
-        document.getElementById('edit-genus').value = plant[4] || '';
-        document.getElementById('edit-species').value = plant[5] || '';
-        document.getElementById('edit-care').value = plant[6] || '';
-        document.getElementById('edit-watering').value = plant[7] || '';
-        document.getElementById('edit-origin').value = plant[8] || '';
-        document.getElementById('edit-description').value = plant[9] || '';
-        document.getElementById('edit-plant-modal').style.display = 'flex';
+  function editPlant(plant, btn) {
+    document.getElementById('edit-old-name').value = plant[1];
+    document.getElementById('edit-common').value = plant[1] || '';
+    document.getElementById('edit-sci').value = plant[2] || '';
+    document.getElementById('edit-family').value = plant[3] || '';
+    document.getElementById('edit-genus').value = plant[4] || '';
+    document.getElementById('edit-species').value = plant[5] || '';
+    document.getElementById('edit-care').value = plant[6] || '';
+    document.getElementById('edit-watering').value = plant[7] || '';
+    document.getElementById('edit-origin').value = plant[8] || '';
+    document.getElementById('edit-description').value = plant[9] || '';
+    const imgUrl = plant[10] || '';
+    document.getElementById('edit-image-url').value = imgUrl;
+    updateEditImagePreview(imgUrl);
+    document.getElementById('edit-drop-text').textContent = 'Drop new image or click to upload';
+    document.getElementById('edit-plant-modal').style.display = 'flex';
+}
+
+function updateEditImagePreview(imgUrl) {
+    const img = document.getElementById('edit-current-img');
+    const noImg = document.getElementById('edit-no-img');
+    if (imgUrl) {
+        img.src = imgUrl.startsWith('/') ? imgUrl : './imgs/' + encodeURIComponent(imgUrl);
+        img.style.display = 'inline-block';
+        noImg.style.display = 'none';
+    } else {
+        img.style.display = 'none';
+        noImg.style.display = 'block';
     }
+}
+
+function removeEditImage() {
+    document.getElementById('edit-image-url').value = '';
+    updateEditImagePreview('');
+}
 
     function closeEditModal() {
         document.getElementById('edit-plant-modal').style.display = 'none';
@@ -356,6 +389,7 @@
         form.set('watering', document.getElementById('edit-watering').value);
         form.set('origin', document.getElementById('edit-origin').value);
         form.set('description', document.getElementById('edit-description').value);
+        form.set('image_url', document.getElementById('edit-image-url').value);
         fetch('/update-plant', { method: 'POST', body: form }).then(() => {
             closeEditModal();
             if (document.getElementById('search-input').value || hasActiveFilters()) performSearch();
@@ -408,6 +442,16 @@ function setupImageUpload(dropZoneId, inputId, hiddenId, textId) {
 }
 
 setupImageUpload('add-drop-zone', 'add-image-input', 'admin-image-url', 'add-drop-text');
+setupImageUpload('edit-drop-zone', 'edit-image-input', 'edit-image-url', 'edit-drop-text');
+
+// When edit image uploads, also update the preview
+const editInput = document.getElementById('edit-image-input');
+editInput.addEventListener('change', () => {
+    setTimeout(() => {
+        const url = document.getElementById('edit-image-url').value;
+        if (url) updateEditImagePreview(url);
+    }, 500);
+});
 </script>
 </body>
 </html>
