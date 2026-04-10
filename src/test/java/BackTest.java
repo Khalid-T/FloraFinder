@@ -704,4 +704,244 @@ public class BackTest {
         List<String[]> recs = app.getRecommendations("user");
         assertTrue(recs.size() <= 5, "getRecommendations() should return at most 5 plants");
     }
+
+    // =========================================================================
+    // INTEGRATION TESTS
+    // IT-01 through IT-12 send real HTTP requests to the running Javalin server.
+    // Precondition: the server must be started (java back) on port 8080 before
+    // running this section. Each test uses Java's built-in HttpClient.
+    // =========================================================================
+
+    // helper: send a POST with application/x-www-form-urlencoded body
+    private java.net.http.HttpResponse<String> postForm(String path, String body) throws Exception {
+        java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
+                .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
+                .build();
+        java.net.http.HttpRequest req = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080" + path))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        return client.send(req, java.net.http.HttpResponse.BodyHandlers.ofString());
+    }
+
+    // helper: send a GET request; optionally attach a session cookie
+    private java.net.http.HttpResponse<String> getRequest(String path, String cookie) throws Exception {
+        java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
+                .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
+                .build();
+        java.net.http.HttpRequest.Builder builder = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080" + path))
+                .GET();
+        if (cookie != null) builder.header("Cookie", cookie);
+        return client.send(builder.build(), java.net.http.HttpResponse.BodyHandlers.ofString());
+    }
+
+    // helper: log in via HTTP and return the Set-Cookie header so later requests
+    // can carry the same session
+    private String loginViaHttp(String username, String password) throws Exception {
+        java.net.http.HttpResponse<String> res = postForm(
+                "/login-endpoint",
+                "username=" + username + "&password=" + password);
+        String cookie = res.headers().firstValue("Set-Cookie").orElse(null);
+        assertNotNull(cookie, "Expected a session cookie after successful login");
+        return cookie;
+    }
+
+    // ── IT-01-TB: successful login sets session and redirects to index.html ───
+    // Components: login() + /login-endpoint + session
+    @Test
+    void testIT01_LoginSuccessRedirectsToIndex() throws Exception {
+        java.net.http.HttpResponse<String> res = postForm(
+                "/login-endpoint",
+                "username=admin&password=admin");
+        // Javalin responds with a 302 redirect to /index.html on success
+        assertEquals(302, res.statusCode());
+        String location = res.headers().firstValue("Location").orElse("");
+        assertTrue(location.contains("index.html"),
+                "Successful login should redirect to index.html, got: " + location);
+    }
+
+    // ── IT-02-TB: wrong password redirects to signin with error param ─────────
+    // Components: login() failure + redirect
+    @Test
+    void testIT02_LoginFailureRedirectsWithError() throws Exception {
+        java.net.http.HttpResponse<String> res = postForm(
+                "/login-endpoint",
+                "username=admin&password=wrongpassword");
+        assertEquals(302, res.statusCode());
+        String location = res.headers().firstValue("Location").orElse("");
+        assertTrue(location.contains("error=1"),
+                "Failed login should redirect to signin.html?error=1, got: " + location);
+    }
+
+    // ── IT-03-CB: signup endpoint inserts user and redirects with registered flag
+    // Components: /signup-endpoint + sign_up() + DB
+    @Test
+    void testIT03_SignupNewUserRedirectsToSignin() throws Exception {
+        java.net.http.HttpResponse<String> res = postForm(
+                "/signup-endpoint",
+                "username=newplantlover&password=secret123");
+        assertEquals(302, res.statusCode());
+        String location = res.headers().firstValue("Location").orElse("");
+        assertTrue(location.contains("registered=true"),
+                "New signup should redirect to signin.html?registered=true, got: " + location);
+    }
+
+    // ── IT-04-CB: signup with duplicate username redirects with error=exists ──
+    // Components: /signup-endpoint duplicate username
+    @Test
+    void testIT04_SignupDuplicateUsernameRedirectsWithError() throws Exception {
+        // Register once
+        postForm("/signup-endpoint", "username=dupuser&password=pass1");
+        // Register again with same username
+        java.net.http.HttpResponse<String> res = postForm(
+                "/signup-endpoint",
+                "username=dupuser&password=pass2");
+        assertEquals(302, res.statusCode());
+        String location = res.headers().firstValue("Location").orElse("");
+        assertTrue(location.contains("error=exists"),
+                "Duplicate signup should redirect with error=exists, got: " + location);
+    }
+
+    // ── IT-05-CB: admin POSTs to /add-plant, plant is inserted in DB ──────────
+    // Components: /add-plant + add() + DB (admin)
+    @Test
+    void testIT05_AdminAddPlantEndpoint() throws Exception {
+        String cookie = loginViaHttp("admin", "admin");
+        java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
+                .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
+                .build();
+        java.net.http.HttpRequest req = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/add-plant"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Cookie", cookie)
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString(
+                        "common_name=TestOrchid" +
+                                "&sci_name=Orchidaceae+sp." +
+                                "&family=Orchidaceae" +
+                                "&genus=Orchidaceae" +
+                                "&species_epithet=sp." +
+                                "&care_level=High" +
+                                "&watering=Frequent" +
+                                "&origin=Tropics" +
+                                "&description=A+test+orchid." +
+                                "&image_url="))
+                .build();
+        java.net.http.HttpResponse<String> res = client.send(
+                req, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, res.statusCode());
+        assertTrue(res.body().contains("added TestOrchid"),
+                "Response body should confirm plant was added, got: " + res.body());
+    }
+
+    // ── IT-06-CB: admin POSTs to /remove-plant, plant is deleted from DB ─────
+    // Components: /remove-plant + remove() + DB (admin)
+    @Test
+    void testIT06_AdminRemovePlantEndpoint() throws Exception {
+        // First add the plant so we have something to remove
+        String cookie = loginViaHttp("admin", "admin");
+        java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
+                .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
+                .build();
+        // Add plant
+        java.net.http.HttpRequest addReq = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/add-plant"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Cookie", cookie)
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString(
+                        "common_name=PlantToRemove&sci_name=X&family=X&genus=X" +
+                                "&species_epithet=X&care_level=Low&watering=Minimum" +
+                                "&origin=X&description=X&image_url="))
+                .build();
+        client.send(addReq, java.net.http.HttpResponse.BodyHandlers.ofString());
+        // Remove it
+        java.net.http.HttpRequest removeReq = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:8080/remove-plant"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Cookie", cookie)
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString(
+                        "common_name=PlantToRemove"))
+                .build();
+        java.net.http.HttpResponse<String> res = client.send(
+                removeReq, java.net.http.HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, res.statusCode());
+        assertTrue(res.body().contains("Removed"),
+                "Response body should confirm removal, got: " + res.body());
+    }
+
+    // ── IT-07-OB: GET /search-plants?q=maple returns JSON array with match ────
+    // Components: /search-plants + searchWithFilters() + DB
+    @Test
+    void testIT07_SearchPlantsEndpointReturnsJson() throws Exception {
+        java.net.http.HttpResponse<String> res = getRequest("/search-plants?q=maple", null);
+        assertEquals(200, res.statusCode());
+        String body = res.body().trim();
+        // Response should be a JSON array
+        assertTrue(body.startsWith("["),
+                "Search endpoint should return a JSON array, got: " + body);
+    }
+
+    // ── IT-08-TB: GET /search-plants with filters returns only matching plants ─
+    // Components: /search-plants with filters
+    @Test
+    void testIT08_SearchPlantsWithFiltersReturnsFiltered() throws Exception {
+        java.net.http.HttpResponse<String> res = getRequest(
+                "/search-plants?q=&care_level=Low&watering=Minimum", null);
+        assertEquals(200, res.statusCode());
+        String body = res.body().trim();
+        assertTrue(body.startsWith("["),
+                "Filtered search endpoint should return a JSON array, got: " + body);
+        // All returned entries must not be for a plant with care_level != Low
+        // (if results are non-empty the JSON won't contain "Medium" or "High" care levels
+        //  as the first badge value — we just verify the format is correct here)
+        assertFalse(body.equals("null"), "Response should not be null");
+    }
+
+    // ── IT-09-OB: GET /get-user while logged in returns username ─────────────
+    // Components: /get-user + session
+    @Test
+    void testIT09_GetUserWhileLoggedInReturnsUsername() throws Exception {
+        String cookie = loginViaHttp("admin", "admin");
+        java.net.http.HttpResponse<String> res = getRequest("/get-user", cookie);
+        assertEquals(200, res.statusCode());
+        assertEquals("admin", res.body().trim());
+    }
+
+    // ── IT-10-OB: GET /get-user with no session returns 401 ──────────────────
+    // Components: /get-user – not logged in
+    @Test
+    void testIT10_GetUserNotLoggedInReturns401() throws Exception {
+        java.net.http.HttpResponse<String> res = getRequest("/get-user", null);
+        assertEquals(401, res.statusCode());
+    }
+
+    // ── IT-11-OB: GET /is-admin while admin is logged in returns "true" ───────
+    // Components: /is-admin + isAdmin() + session
+    @Test
+    void testIT11_IsAdminWhileAdminLoggedInReturnsTrue() throws Exception {
+        String cookie = loginViaHttp("admin", "admin");
+        java.net.http.HttpResponse<String> res = getRequest("/is-admin", cookie);
+        assertEquals(200, res.statusCode());
+        assertEquals("true", res.body().trim());
+    }
+
+    // ── IT-12-TB: GET /logout invalidates session; /get-user then returns 401 ─
+    // Components: /logout + session invalidation
+    @Test
+    void testIT12_LogoutInvalidatesSession() throws Exception {
+        String cookie = loginViaHttp("admin", "admin");
+        // Confirm logged in
+        java.net.http.HttpResponse<String> before = getRequest("/get-user", cookie);
+        assertEquals(200, before.statusCode());
+        // Log out
+        java.net.http.HttpResponse<String> logoutRes = getRequest("/logout", cookie);
+        assertEquals(302, logoutRes.statusCode());
+        String location = logoutRes.headers().firstValue("Location").orElse("");
+        assertTrue(location.contains("signin.html"),
+                "Logout should redirect to signin.html, got: " + location);
+        // Session should now be invalid — /get-user must return 401
+        java.net.http.HttpResponse<String> after = getRequest("/get-user", cookie);
+        assertEquals(401, after.statusCode());
+    }
 }
