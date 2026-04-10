@@ -182,7 +182,10 @@ public class BackTest {
     //--------------------- ADD PLANT TESTS -------------------
     @Test
     void testAddWithoutAdmin() throws SQLException {
-        String result = app.add("SYM", "Sci", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "A common garden rose.", null);
+        String result = app.add(
+            "Rose", "Rosa indica", "Rosaceae", "Rosa", "indica",
+            "Medium", "Moderate", "USA", "A common garden rose.", null
+        );
         assertEquals("login as admin before adding plants", result);
     }
 
@@ -190,10 +193,14 @@ public class BackTest {
     void testAddWithAdmin() throws SQLException {
         app.sign_up("admin", "pass", 1);
         app.login("admin", "pass");
-        
-        String result = app.add("SYM", "Sci", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "A common garden rose.", null);
-        assertTrue(result.contains("added Rose"));
-    } 
+ 
+        String result = app.add(
+            "Rose", "Rosa indica", "Rosaceae", "Rosa", "indica",
+            "Medium", "Moderate", "USA", "A common garden rose.", null
+        );
+        assertTrue(result.contains("added Rose"),
+            "Expected result to contain 'added Rose' but got: " + result);
+    }
     //--------------------- REMOVE PLANT TESTS ----------------
     @Test
     void testRemoveWithoutAdmin() throws SQLException {
