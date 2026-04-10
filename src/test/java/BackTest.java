@@ -705,12 +705,12 @@ public class BackTest {
         assertTrue(recs.size() <= 5, "getRecommendations() should return at most 5 plants");
     }
 
-    // =========================================================================
+    // -------------------------------------------------------------------------
     // INTEGRATION TESTS
     // IT-01 through IT-12 send real HTTP requests to the running Javalin server.
     // Precondition: the server must be started (java back) on port 8080 before
     // running this section. Each test uses Java's built-in HttpClient.
-    // =========================================================================
+    // -------------------------------------------------------------------------
 
     // helper: send a POST with application/x-www-form-urlencoded body
     private java.net.http.HttpResponse<String> postForm(String path, String body) throws Exception {
@@ -748,8 +748,8 @@ public class BackTest {
         return cookie;
     }
 
-    // ── IT-01-TB: successful login sets session and redirects to index.html ───
-    // Components: login() + /login-endpoint + session
+    //--------------------- IT-01-TB ----------------------------
+    // Successful login sets session and redirects to index.html
     @Test
     void testIT01_LoginSuccessRedirectsToIndex() throws Exception {
         java.net.http.HttpResponse<String> res = postForm(
@@ -762,8 +762,8 @@ public class BackTest {
                 "Successful login should redirect to index.html, got: " + location);
     }
 
-    // ── IT-02-TB: wrong password redirects to signin with error param ─────────
-    // Components: login() failure + redirect
+    //--------------------- IT-02-TB ----------------------------
+    // Wrong password redirects to signin with error param
     @Test
     void testIT02_LoginFailureRedirectsWithError() throws Exception {
         java.net.http.HttpResponse<String> res = postForm(
@@ -775,8 +775,8 @@ public class BackTest {
                 "Failed login should redirect to signin.html?error=1, got: " + location);
     }
 
-    // ── IT-03-CB: signup endpoint inserts user and redirects with registered flag
-    // Components: /signup-endpoint + sign_up() + DB
+    //--------------------- IT-03-CB ----------------------------
+    // Signup endpoint inserts user and redirects with registered flag
     @Test
     void testIT03_SignupNewUserRedirectsToSignin() throws Exception {
         java.net.http.HttpResponse<String> res = postForm(
@@ -788,8 +788,8 @@ public class BackTest {
                 "New signup should redirect to signin.html?registered=true, got: " + location);
     }
 
-    // ── IT-04-CB: signup with duplicate username redirects with error=exists ──
-    // Components: /signup-endpoint duplicate username
+    //--------------------- IT-04-CB ----------------------------
+    // Signup with duplicate username redirects with error=exists
     @Test
     void testIT04_SignupDuplicateUsernameRedirectsWithError() throws Exception {
         // Register once
@@ -804,8 +804,8 @@ public class BackTest {
                 "Duplicate signup should redirect with error=exists, got: " + location);
     }
 
-    // ── IT-05-CB: admin POSTs to /add-plant, plant is inserted in DB ──────────
-    // Components: /add-plant + add() + DB (admin)
+    //--------------------- IT-05-CB ----------------------------
+    // Admin POSTs to /add-plant, plant is inserted in DB
     @Test
     void testIT05_AdminAddPlantEndpoint() throws Exception {
         String cookie = loginViaHttp("admin", "admin");
@@ -835,8 +835,8 @@ public class BackTest {
                 "Response body should confirm plant was added, got: " + res.body());
     }
 
-    // ── IT-06-CB: admin POSTs to /remove-plant, plant is deleted from DB ─────
-    // Components: /remove-plant + remove() + DB (admin)
+    //--------------------- IT-06-CB ----------------------------
+    // Admin POSTs to /remove-plant, plant is deleted from DB
     @Test
     void testIT06_AdminRemovePlantEndpoint() throws Exception {
         // First add the plant so we have something to remove
@@ -870,8 +870,8 @@ public class BackTest {
                 "Response body should confirm removal, got: " + res.body());
     }
 
-    // ── IT-07-OB: GET /search-plants?q=maple returns JSON array with match ────
-    // Components: /search-plants + searchWithFilters() + DB
+    //--------------------- IT-07-OB ----------------------------
+    // GET /search-plants?q=maple returns JSON array with match
     @Test
     void testIT07_SearchPlantsEndpointReturnsJson() throws Exception {
         java.net.http.HttpResponse<String> res = getRequest("/search-plants?q=maple", null);
@@ -882,8 +882,8 @@ public class BackTest {
                 "Search endpoint should return a JSON array, got: " + body);
     }
 
-    // ── IT-08-TB: GET /search-plants with filters returns only matching plants ─
-    // Components: /search-plants with filters
+    //--------------------- IT-08-TB ----------------------------
+    // GET /search-plants with filters returns only matching plants
     @Test
     void testIT08_SearchPlantsWithFiltersReturnsFiltered() throws Exception {
         java.net.http.HttpResponse<String> res = getRequest(
@@ -898,8 +898,8 @@ public class BackTest {
         assertFalse(body.equals("null"), "Response should not be null");
     }
 
-    // ── IT-09-OB: GET /get-user while logged in returns username ─────────────
-    // Components: /get-user + session
+    //--------------------- IT-09-OB ----------------------------
+    // GET /get-user while logged in returns username
     @Test
     void testIT09_GetUserWhileLoggedInReturnsUsername() throws Exception {
         String cookie = loginViaHttp("admin", "admin");
@@ -908,16 +908,16 @@ public class BackTest {
         assertEquals("admin", res.body().trim());
     }
 
-    // ── IT-10-OB: GET /get-user with no session returns 401 ──────────────────
-    // Components: /get-user – not logged in
+    //--------------------- IT-10-OB ----------------------------
+    // GET /get-user with no session returns 401
     @Test
     void testIT10_GetUserNotLoggedInReturns401() throws Exception {
         java.net.http.HttpResponse<String> res = getRequest("/get-user", null);
         assertEquals(401, res.statusCode());
     }
 
-    // ── IT-11-OB: GET /is-admin while admin is logged in returns "true" ───────
-    // Components: /is-admin + isAdmin() + session
+    //--------------------- IT-11-OB ----------------------------
+    // GET /is-admin while admin is logged in returns "true" //
     @Test
     void testIT11_IsAdminWhileAdminLoggedInReturnsTrue() throws Exception {
         String cookie = loginViaHttp("admin", "admin");
@@ -926,8 +926,8 @@ public class BackTest {
         assertEquals("true", res.body().trim());
     }
 
-    // ── IT-12-TB: GET /logout invalidates session; /get-user then returns 401 ─
-    // Components: /logout + session invalidation
+    //--------------------- IT-12-TB ----------------------------
+    // GET /logout invalidates session; /get-user then returns 401
     @Test
     void testIT12_LogoutInvalidatesSession() throws Exception {
         String cookie = loginViaHttp("admin", "admin");
@@ -943,5 +943,87 @@ public class BackTest {
         // Session should now be invalid — /get-user must return 401
         java.net.http.HttpResponse<String> after = getRequest("/get-user", cookie);
         assertEquals(401, after.statusCode());
+    }
+    
+    //----------------------- SYSTEM TESTS [MANUAL] ----------------------
+
+    //--------------------- ST-01-OB ----------------------------
+    // New user registration and login
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-01-OB: Manual browser test")
+    void testST01_NewUserRegistrationAndLogin() {
+        // Expected: user lands on index.html; welcome message shows the username.
+    }
+ 
+    //--------------------- ST-02-OB ----------------------------
+    // Failed login shows error message 
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-02-OB: Manual browser test")
+    void testST02_FailedLoginShowsError() {
+        // Expected: stays on signin.html with the error message visible.
+    }
+ 
+    //--------------------- ST-03-OB ----------------------------
+    // Search returns plants by name
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-03-OB: Manual browser test")
+    void testST03_SearchReturnsByName() {
+        // Expected: plant cards appear; the RED MAPLE card is shown with its correct scientific name and origin
+    }
+ 
+    //--------------------- ST-04-OB ----------------------------
+    // Search with combined filters
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-04-OB: Manual browser test")
+    void testST04_SearchWithCombinedFilters() {
+        // Expected: only plants matching both criteria are shown; result count updates.
+    }
+ 
+    //--------------------- ST-05-OB ----------------------------
+    // No results shown for unknown plant
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-05-OB: Manual browser test")
+    void testST05_NoResultsForUnknownPlant() {
+        // Expected: "No specimens found" message is displayed; no plant cards appear.
+    }
+ 
+    //--------------------- ST-06-OB ----------------------------
+    // Admin tools visible after admin login
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-06-OB: Manual browser test")
+    void testST06_AdminToolsVisibleAfterAdminLogin() {
+        // Expected: the Admin Tools button is visible; regular (non-admin) users do not see this button
+    }
+ 
+    //--------------------- ST-07-OB ----------------------------
+    // Admin adds a plant via inline tools
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-07-OB: Manual browser test")
+    void testST07_AdminAddsPlantViaInlineTools() {
+        // Expected: success message shown; searching for the new plant returns it in results
+    }
+ 
+    //--------------------- ST-08-OB ----------------------------
+    // Admin removes a plant via inline tools
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-08-OB: Manual browser test")
+    void testST08_AdminRemovesPlantViaInlineTools() {
+        // Expected: success message shown; a subsequent search for that plant returns no results
+    }
+ 
+    //--------------------- ST-09-OB ----------------------------
+    // Logout clears session
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-09-OB: Manual browser test")
+    void testST09_LogoutClearsSession() {
+        // Expected: welcome message is gone; the auth link shows "Sign In"; the Admin Tools button is hidden
+    }
+ 
+    //--------------------- ST-10-OB ----------------------------
+    // Filter panel and clear filters
+    @Test
+    @org.junit.jupiter.api.Disabled("ST-10-OB: Manual browser test")
+    void testST10_FilterPanelAndClearFilters() {
+        // Expected: filters reset; the next search runs without any active filters; the full unfiltered result set is shown.
     }
 }
