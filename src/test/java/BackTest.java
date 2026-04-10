@@ -779,9 +779,10 @@ public class BackTest {
     // Signup endpoint inserts user and redirects with registered flag
     @Test
     void testIT03_SignupNewUserRedirectsToSignin() throws Exception {
+        String uniqueUsername = "newplantlover" + System.currentTimeMillis();
         java.net.http.HttpResponse<String> res = postForm(
                 "/signup-endpoint",
-                "username=newplantlover&password=secret123");
+                "username=" + uniqueUsername + "&password=secret123");
         assertEquals(302, res.statusCode());
         String location = res.headers().firstValue("Location").orElse("");
         assertTrue(location.contains("registered=true"),
