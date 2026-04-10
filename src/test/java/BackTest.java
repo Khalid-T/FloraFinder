@@ -235,12 +235,13 @@ public class BackTest {
     private void seedSearchData() throws SQLException {
         String sql = """
             INSERT INTO plants
-            (common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description)
+              (common_name, sci_name, family, genus, species_epithet,
+               care_level, watering, origin, description)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """;
         try (java.sql.PreparedStatement stmt = app.conn.prepareStatement(sql)) {
-
-            // 1. RED MAPLE — Sapindaceae, Moderate, Moderate, North America
+ 
+            // 1. RED MAPLE
             stmt.setString(1, "RED MAPLE");
             stmt.setString(2, "Acer rubrum");
             stmt.setString(3, "Sapindaceae");
@@ -251,8 +252,8 @@ public class BackTest {
             stmt.setString(8, "North America");
             stmt.setString(9, "A common maple tree.");
             stmt.addBatch();
-
-            // 2. VELVETLEAF — Malvaceae, Easy, Low, North America
+ 
+            // 2. VELVETLEAF
             stmt.setString(1, "VELVETLEAF");
             stmt.setString(2, "Abutilon theophrasti");
             stmt.setString(3, "Malvaceae");
@@ -263,8 +264,8 @@ public class BackTest {
             stmt.setString(8, "North America");
             stmt.setString(9, "A broadleaf weed.");
             stmt.addBatch();
-
-            // 3. balsam fir — Pinaceae, Hard, High, Europe
+ 
+            // 3. balsam fir
             stmt.setString(1, "balsam fir");
             stmt.setString(2, "Abies balsamea");
             stmt.setString(3, "Pinaceae");
@@ -275,8 +276,8 @@ public class BackTest {
             stmt.setString(8, "Europe");
             stmt.setString(9, "An evergreen conifer.");
             stmt.addBatch();
-
-            // 4. purple sand-verbena — Nyctaginaceae, Easy, Moderate, South America
+ 
+            // 4. purple sand-verbena
             stmt.setString(1, "purple sand-verbena");
             stmt.setString(2, "Abronia umbellata");
             stmt.setString(3, "Nyctaginaceae");
@@ -287,8 +288,8 @@ public class BackTest {
             stmt.setString(8, "South America");
             stmt.setString(9, "A flowering coastal plant.");
             stmt.addBatch();
-
-            // 5. poverty threeawn — Poaceae, Easy, Low, South America
+ 
+            // 5. poverty threeawn
             stmt.setString(1, "poverty threeawn");
             stmt.setString(2, "Aristida dichotoma");
             stmt.setString(3, "Poaceae");
@@ -299,7 +300,7 @@ public class BackTest {
             stmt.setString(8, "South America");
             stmt.setString(9, "A native grass species.");
             stmt.addBatch();
-
+ 
             stmt.executeBatch();
         }
     }
