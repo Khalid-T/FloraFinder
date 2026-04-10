@@ -179,7 +179,7 @@ public class BackTest {
         assertFalse(app.isAdmin());
     }
  
-    //--------------------- ADD PLANT TESTS -------------------
+    //--------------------- ADD PLANT TESTS ------------------- [UT-10-CB]
     @Test
     void testAddWithoutAdmin() throws SQLException {
         String result = app.add("SYM", "Sci", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "A common garden rose.", null);
@@ -198,7 +198,7 @@ public class BackTest {
         assertTrue(result.contains("added Rose"),
             "Expected result to contain 'added Rose' but got: " + result);
     }
-    //--------------------- REMOVE PLANT TESTS ----------------
+    //--------------------- REMOVE PLANT TESTS ---------------- [UT-11-CB]
     @Test
     void testRemoveWithoutAdmin() throws SQLException {
         String result = app.remove("Rose");
@@ -231,7 +231,7 @@ public class BackTest {
     //--------------------- SEARCH TESTS ----------------------
  
 
-  // Seed helper
+  // Seeds the in-memory DB with 5 plants for search tests.
     private void seedSearchData() throws SQLException {
         String sql = """
             INSERT INTO plants
@@ -305,7 +305,7 @@ public class BackTest {
         }
     }
 
-    // --- Name search ---
+    // --- Name search --- (UT-16 to UT-20)
 
     @Test
     void testSearchByNameFound() throws SQLException {
@@ -514,6 +514,134 @@ public class BackTest {
         assertEquals(11, results.get(0).length,
             "Each result should have 11 fields: id, common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description, image_url");
     }
+    
+    //--------------------- COLLECTION TESTS [CB] ----------------------
+
+    // seed helper — adds one plant and returns its id
+    private int seedOnePlant() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.login("admin", "pass");
+        app.add("Rose", "Rosa indica", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "A rose.", null);
+        app.logout();
+        try (java.sql.Statement st = app.conn.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT id FROM plants WHERE common_name='Rose'")) {
+            rs.next();
+            return rs.getInt("id");
+        }
+    }
+
+    @Test
+    void testAddToCollection() throws SQLException {
+        int plantId = seedOnePlant();
+        app.sign_up("user", "pass", 0);
+        String result = app.addToCollection("user", plantId);
+        assertEquals("added", result);
+    }
+
+    @Test
+    void testAddToCollectionDuplicate() throws SQLException {
+        int plantId = seedOnePlant();
+        app.sign_up("user", "pass", 0);
+        app.addToCollection("user", plantId);
+        String result = app.addToCollection("user", plantId);
+        assertEquals("already", result);
+    }
+
+    @Test
+    void testAddToCollectionUnknownUser() throws SQLException {
+        int plantId = seedOnePlant();
+        String result = app.addToCollection("nobody", plantId);
+        assertEquals("User not found", result);
+    }
+
+    @Test
+    void testGetCollection() throws SQLException {
+        int plantId = seedOnePlant();
+        app.sign_up("user", "pass", 0);
+        app.addToCollection("user", plantId);
+        List<String[]> col = app.getCollection("user");
+        assertEquals(1, col.size());
+        assertEquals("Rose", col.get(0)[1]);
+    }
+
+    @Test
+    void testGetCollectionEmpty() throws SQLException {
+        app.sign_up("user", "pass", 0);
+        List<String[]> col = app.getCollection("user");
+        assertTrue(col.isEmpty());
+    }
+
+    @Test
+    void testRemoveFromCollection() throws SQLException {
+        int plantId = seedOnePlant();
+        app.sign_up("user", "pass", 0);
+        app.addToCollection("user", plantId);
+        String result = app.removeFromCollection("user", plantId);
+        assertEquals("removed", result);
+        assertTrue(app.getCollection("user").isEmpty());
+    }
+
+    @Test
+    void testRemoveFromCollectionUnknownUser() throws SQLException {
+        int plantId = seedOnePlant();
+        String result = app.removeFromCollection("nobody", plantId);
+        assertEquals("User not found", result);
+    }
+
+    //--------------------- RECOMMENDATION TESTS [TB] ----------------------
+
+    @Test
+    void testGetRecommendationsEmptyCollection() throws SQLException {
+        app.sign_up("user", "pass", 0);
+        List<String[]> recs = app.getRecommendations("user");
+        assertTrue(recs.isEmpty());
+    }
+
+    @Test
+    void testGetRecommendationsReturnsRelatedPlants() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.login("admin", "pass");
+        // PlantA — user will save this one
+        app.add("PlantA", "Sci A", "Rosaceae", "Rosa", "indica", "Medium", "Average", "Japan", "Desc A", null);
+        // PlantB — shares care_level + watering with PlantA, should be recommended
+        app.add("PlantB", "Sci B", "Rosaceae", "Rosa", "indica", "Medium", "Average", "Japan", "Desc B", null);
+        // PlantC — different attributes, should not be recommended
+        app.add("PlantC", "Sci C", "Cactaceae", "Cactus", "sp", "Low", "Minimum", "Mexico", "Desc C", null);
+        app.logout();
+
+        app.sign_up("user", "pass", 0);
+        try (java.sql.Statement st = app.conn.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT id FROM plants WHERE common_name='PlantA'")) {
+            rs.next();
+            app.addToCollection("user", rs.getInt("id"));
+        }
+
+        List<String[]> recs = app.getRecommendations("user");
+        boolean foundB = recs.stream().anyMatch(p -> "PlantB".equals(p[1]));
+        boolean foundA = recs.stream().anyMatch(p -> "PlantA".equals(p[1]));
+        assertTrue(foundB, "PlantB should be recommended");
+        assertFalse(foundA, "PlantA is already in collection, should not be recommended");
+    }
+
+    @Test
+    void testGetRecommendationsMaxFive() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.login("admin", "pass");
+        app.add("Seed", "Sci Seed", "Rosaceae", "Rosa", "indica", "Medium", "Average", "Japan", "Seed plant", null);
+        // 8 plants that all match on care_level + watering
+        for (int i = 1; i <= 8; i++) {
+            app.add("Match" + i, "Sci " + i, "Rosaceae", "Rosa", "indica", "Medium", "Average", "Japan", "Match " + i, null);
+        }
+        app.logout();
+
+        app.sign_up("user", "pass", 0);
+        try (java.sql.Statement st = app.conn.createStatement();
+             java.sql.ResultSet rs = st.executeQuery("SELECT id FROM plants WHERE common_name='Seed'")) {
+            rs.next();
+            app.addToCollection("user", rs.getInt("id"));
+        }
+
+        List<String[]> recs = app.getRecommendations("user");
+        assertTrue(recs.size() <= 5, "getRecommendations() should return at most 5 plants");
+    }
 }
-
-
