@@ -179,6 +179,20 @@
         }
     }).catch(() => {});
 
+    function applyAdminButtons() {
+    fetch('/is-admin').then(res => res.ok ? res.text() : null).then(val => {
+        if (val === 'true') {
+            // Find all remove buttons and edit buttons in the DOM and show them
+            document.querySelectorAll('.remove-plant-btn').forEach(btn => {
+                btn.style.display = 'block';
+            });
+            document.querySelectorAll('.edit-plant-btn').forEach(btn => {
+                btn.style.display = 'inline-block';
+            });
+        }
+    }).catch(() => {});
+}
+
     function buildCard(plant) {
         let badges = '';
         if (plant[6]) badges += `<span class="meta-badge">🌱 ${plant[6]}</span>`;
