@@ -232,6 +232,53 @@ public class BackTest {
         assertTrue(result.contains("Removed"),
             "Expected result to contain 'Removed' but got: " + result);
     }
+
+    //--------------------- UPDATE PLANT TESTS [CB] -------------------
+    @Test
+    void testUpdateDescriptionWithAdmin() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.login("admin", "pass");
+        app.add("Oak", "Quercus robur", "Fagaceae", "Quercus", "robur", "Low", "Minimum", "Europe", "Old description.", null);
+        String result = app.updateDescription("Oak", "New description.");
+        assertEquals("Description updated for Oak", result);
+    }
+
+    @Test
+    void testUpdateDescriptionWithoutAdmin() throws SQLException {
+        String result = app.updateDescription("Oak", "New description.");
+        assertEquals("login as admin first", result);
+    }
+
+    @Test
+    void testUpdateDescriptionPlantNotFound() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.login("admin", "pass");
+        String result = app.updateDescription("GhostPlant", "Desc.");
+        assertEquals("Plant not found: GhostPlant", result);
+    }
+
+    @Test
+    void testUpdatePlantWithAdmin() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.login("admin", "pass");
+        app.add("Fern", "Pteridium aquilinum", "Dennstaedtiaceae", "Pteridium", "aquilinum", "Low", "Average", "Europe", "A common fern.", null);
+        String result = app.updatePlant("Fern", "Eagle Fern", "Pteridium aquilinum", "Dennstaedtiaceae", "Pteridium", "aquilinum", "Low", "Average", "Europe", "Updated description.", null);
+        assertEquals("Plant updated", result);
+    }
+
+    @Test
+    void testUpdatePlantWithoutAdmin() throws SQLException {
+        String result = app.updatePlant("Fern", "Eagle Fern", "Pteridium aquilinum", "Dennstaedtiaceae", "Pteridium", "aquilinum", "Low", "Average", "Europe", "Desc.", null);
+        assertEquals("login as admin first", result);
+    }
+
+    @Test
+    void testUpdatePlantNotFound() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.login("admin", "pass");
+        String result = app.updatePlant("GhostPlant", "Ghost", "Ghost sci", "GhostFamily", "Ghost", "ghost", "Low", "Average", "Unknown", "Desc.", null);
+        assertEquals("Plant not found", result);
+    }
                 
     //--------------------- SEARCH TESTS ----------------------
  
