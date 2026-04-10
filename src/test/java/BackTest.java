@@ -84,7 +84,7 @@ public class BackTest {
         String result = app.reset_password("admin", "password", "password");
         assertEquals("New password cannot equal old password", result);
     }
-    //----------------------------------------------------------------------------------------
+    //---------------------------- show all users [CB] ----------------------------
     @Test
     void testshowallusers() throws SQLException {
 
@@ -99,7 +99,12 @@ public class BackTest {
         String result = app.getAllUsers();
         assertNotNull(result);
         assertTrue(result.contains("admin"));
-        
+    }
+
+    @Test
+    void testShowAllUsersWithoutAdmin() throws SQLException {
+        app.sign_up("guest", "guest", 0);
+        assertEquals("login as an admin first", app.getAllUsers());
     }
     //--------------------- SIGN-UP TESTS ---------------------
     @Test
