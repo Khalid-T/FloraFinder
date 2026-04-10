@@ -126,7 +126,7 @@ public class BackTest {
             app.sign_up("Marco", "456", 0);
         });
     }
-    // ----------------------- remove users -----------------------
+    // ----------------------- remove users [CB] -----------------------
     @Test
     void testRemoveUserSuccess() throws SQLException {
         app.sign_up("admin", "pass", 1);
@@ -141,14 +141,14 @@ public class BackTest {
         assertEquals("login as an admin first", app.removeusr("guest"));
     }
 
-   @Test
-   void testRemoveUserActuallyDeleted() throws SQLException {
-       app.sign_up("admin", "pass", 1);
-       app.sign_up("guest", "guest", 0);
-       app.login("admin", "pass");
-       app.removeusr("guest");
-       assertFalse(app.login("guest", "guest")); // can't log in if deleted
-   }
+    @Test
+    void testRemoveUserActuallyDeleted() throws SQLException {
+        app.sign_up("admin", "pass", 1);
+        app.sign_up("guest", "guest", 0);
+        app.login("admin", "pass");
+        app.removeusr("guest");
+        assertFalse(app.login("guest", "guest")); // can't log in if deleted
+    }
     // -------------------------- promote  -------------
     @Test
     void testPromoteSuccess() throws SQLException {
