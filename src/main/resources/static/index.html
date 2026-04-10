@@ -101,7 +101,7 @@
 <div id="collection-bar" style="display:none; max-width:900px; margin:18px auto 0; padding:0 20px;">
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
         <a href="collection.html" class="nav-cta">View My Wishlist </a>
-        <a href="admindash.html" class="nav-cta" style="border-color:var(--gold);">Admin Dashboard ⚙</a>
+        <a href="admindash.html" id="admin-dash-link" class="nav-cta" style="border-color:var(--gold); display:none;">Admin Dashboard ⚙</a>
     </div>
 </div>
 
@@ -203,15 +203,18 @@
         </div>`;
     }
 
-    function applyAdminButtons() {
-        fetch('/is-admin').then(r => r.ok ? r.text() : '').then(v => {
-            if (v === 'true') {
-                document.querySelectorAll('.edit-desc-btn').forEach(b => b.style.display = 'inline-block');
-                document.querySelectorAll('.remove-plant-btn').forEach(b => b.style.display = 'block');
-                document.querySelectorAll('.edit-plant-btn').forEach(b => b.style.display = 'inline-block');
+
+        fetch('/is-admin').then(res => res.ok ? res.text() : null).then(val => {
+            if (val === 'true') {
+                // 1. This shows the "Add Plant" tool (Admin Tools)
+                document.getElementById('admin-panel').style.display = 'block';
+
+                // 2. ADD THIS LINE: This shows the Admin Dashboard tab
+                document.getElementById('admin-dash-link').style.display = 'inline-block';
+
+                setTimeout(applyAdminButtons, 500);
             }
-        });
-    }
+        }).catch(() => {});
 
     function loadFeaturedPlants() {
         const display = document.getElementById('plants-display');
