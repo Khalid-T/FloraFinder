@@ -38,6 +38,14 @@ public class BackTest {
                         image_url TEXT
                     );
                 """);
+                stmt.execute("""
+                    CREATE TABLE collections(
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                        plant_id INTEGER NOT NULL REFERENCES plants(id) ON DELETE CASCADE,
+                        UNIQUE(user_id, plant_id)
+                    );
+                """);
                 stmt.close();
             }
         };
