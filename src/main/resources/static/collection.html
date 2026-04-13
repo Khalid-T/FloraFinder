@@ -407,7 +407,7 @@ function loadCollection() {
                 card.innerHTML = `
                 <div class="image-wrapper">
                     <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}"
-                         onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
+                         onerror="this.outerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
                 </div>
                 <div class="plant-info">
                     <h3>${plant[1] || "Unnamed Specimen"}</h3>
@@ -494,7 +494,7 @@ function loadRecommendations() {
                 card.innerHTML = `
                 <div class="image-wrapper">
                     <img src="./imgs/${encodeURIComponent(imgFile)}" alt="${plant[1]}"
-                         onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
+                         onerror="this.outerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
                 </div>
                 <div class="plant-info">
                     <h3>${plant[1] || "Unnamed Specimen"}</h3>

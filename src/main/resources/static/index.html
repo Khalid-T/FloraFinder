@@ -204,7 +204,7 @@
         return `
         <div class="image-wrapper" style="position:relative;">
             <button class="remove-plant-btn" style="display:none; background:#8b3a3a; color:white; border:none; border-radius:50%; width:28px; height:28px; font-size:1.1rem; cursor:pointer; position:absolute; top:10px; right:10px; z-index:10;" onclick="removePlant('${plant[1]}', this)">−</button>
-           <img src="${imgFile.startsWith('/') ? imgFile : './imgs/' + encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
+           <img src="${imgFile.startsWith('/') ? imgFile : './imgs/' + encodeURIComponent(imgFile)}" alt="${plant[1]}" onerror="this.outerHTML='<div style=\\'display:flex;height:100%;align-items:center;justify-content:center;background:#f4f1ec;color:#7b8d7e;font-size:3rem\\'>🌿</div>'">
         </div>
         <div class="plant-info">
             <h3>${plant[1] || "Unnamed"}</h3>
