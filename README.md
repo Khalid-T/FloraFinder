@@ -1,4 +1,4 @@
-# Plant Catalogue System
+# FloraFinder — Plant Catalogue System
 
 ## Course
 
@@ -16,133 +16,95 @@ CSCI 2040U – Software Design and Analysis
 
 ## Project Overview
 
-The Plant Catalogue System is a web application that lets administrators upload and manage plant information while users search and filter plants by characteristics (e.g., light, soil, region, price). The goal is to help people quickly locate plants suited to their needs without scrolling large catalogues.
+FloraFinder is a full-stack web application for browsing, searching, and managing a botanical plant database. Users can register, sign in, search and filter plants, save favourites to a personal collection, and receive plant recommendations. Administrators have access to an inline management dashboard for adding, removing, and editing plant records and user accounts.
+
+---
+
+## Features
+
+### User Features
+
+- **Registration & Login** — Sign up for an account and sign in with username and password.
+- **Password Reset** — Reset your password by providing your current credentials and a new one.
+- **Plant Search** — Search by common name or scientific name with partial and case-insensitive matching.
+- **Smart Filtering** — Filter results by family, care level, watering needs, and origin.
+- **Plant Collection (Wishlist)** — Save plants to a personal collection and remove them at any time.
+- **Recommendations** — Receive automated plant suggestions based on your collection history.
+
+### Admin Features
+
+- **Add / Remove Plants** — Insert new plant records or delete existing ones from the database.
+- **Edit Plant Details** — Update a plant's description or full record inline.
+- **Upload Plant Images** — Replace a plant's photo through the admin panel.
+- **User Management** — View all registered users, remove accounts, and promote users to admin.
+
+---
 
 ## Prerequisites
 
 - JDK 17+
 - Maven 3.9+
-- Project dependencies are managed via `pom.xml`.
+
+Project dependencies are managed via `pom.xml` and resolved automatically by Maven.
 
 ---
 
-## Core Features
+## Build & Run
 
-### Admin Features
-
-- **Inventory Management (Iteration 1):** Administrators can add new species to the database and remove plants that are no longer available.
-- **Role-Based Access (Iteration 1):** Secure login/logout functionality that grants administrators access to the management dashboard.
-- **Content Modification (Iteration 2):** Ability to update existing plant descriptions and replace/update plant photos for accuracy.
-- **User Support (Iteration 2):** Access to basic user information to assist with account support and lockout issues.
-
-### User Features
-
-- **Regional Search (Iteration 1):** Users can search the 100-plant database by scientific name, common name, or specific US state.
-- **Smart Filtering (Iteration 1):** Basic category filters to narrow down plant results based on attributes.
-- **Account Security (Iteration 1/2):** Standard Login/Logout (Iter 1) and Password Reset functionality (Iter 2).
-- **Personalization (Iteration 2/3):** Alphabetical sorting of results and a "Wishlist" system to save favorite plants.
-- **Recommendation Engine (Iteration 3):** Automated plant suggestions based on user wishlist history and SQL-driven logic.
-
----
-
-## Development Iterations
-
-### Iteration 1: The "Demo Ready" Sprint (Labs 5–7)
-
-- **Goal:** Establish a functional Minimum Viable Product (MVP).
-- **Focus:** Core data handling and the admin-user loop.
-- **Key Deliverables:**
-  - Successful cleaning and integration of the 100-plant regional database.
-  - Admin "Add/Remove" functionality.
-  - User "Search/Filter" functionality.
-  - Role-based Login/Logout system.
-
-### Iteration 2: Quality & User Experience (Labs 8–10)
-
-- **Goal:** Improve system flexibility, UI aesthetics, and account recovery.
-- **Focus:** Refining the database schema to allow for "Updates" and polishing the frontend.
-- **Key Deliverables:**
-  - Password Reset workflow.
-  - Update functionality for plant descriptions and photos.
-  - Alphabetical sorting and UI Polish.
-  - Unit testing on core classes and Statechart diagram design.
-
-### Iteration 3: Final Features & Delivery (Labs 11–12)
-
-- **Goal:** Implement advanced logic and final project hand-off.
-- **Focus:** SQL-based recommendations and simulation of a purchasing flow.
-- **Key Deliverables:**
-  - Recommendation system based on user activity.
-  - Purchasing/Checkout simulation.
-  - Complete test suite utilizing Mock Objects for database isolation.
-  - Final bug fixes and deployment preparation.
-
----
-
-## Build & Run Instructions
-
-You can start the Plant Catalogue server either directly through your IDE VS Code, by using the terminal with Maven or running `build_project.bat`.
-
-### Option 1: IDE Method
-
-1. **Open the Project:** Launch VS Code and ensure your project folder is open.
-2. **Launch the Backend:**
-   - Navigate to `src/main/java/back.java`.
-   - Click the **Run** button located directly above the `public static void main` method (or press `F5`).
-3. **Check the Terminal:** Look for the following confirmation message in the VS Code integrated terminal:
-   ```text
-   --- Flora Catalogue Server Running ---
-   Go to: http://localhost:8080/signin.html
-   ```
-
-### Option 2: Maven / Terminal Method
-
-1. **Prepare Environment:** Ensure JDK 17+ and Maven 3.9+ are installed and on your PATH.
-
-2. **Clone the Repository:**
+### Option 1: Maven (recommended)
 
 ```bash
-   git clone https://github.com/Khalid-T/FloraFinder
-   cd FloraFinder
+git clone https://github.com/Khalid-T/FloraFinder
+cd FloraFinder
+mvn clean compile exec:java
 ```
 
-3. **Compile and Run** using one of the following:
+Then open your browser at:
 
-   **Via the build script:**
-   Navigate to `build_project.bat` in the project root and double-click it.
-   This will compile the project, copy dependencies into `lib/` on first run, and host the site on port 8080.
+```
+http://localhost:8080/signin.html
+```
 
-   **Via Maven directly:**
+Press `Ctrl+C` to stop the server.
+
+### Option 2: VS Code
+
+1. Open the project folder in VS Code.
+2. Navigate to `src/main/java/back.java`.
+3. Click **Run** above the `main` method (or press `F5`).
+4. Open `http://localhost:8080/signin.html` in your browser.
+
+### Option 3: Windows batch script
+
+Double-click `build_project.bat` in the project root. It will compile the project, copy dependencies into `lib/`, and start the server on port 8080.
+
+> **Note:** `build_project.bat` copies dependencies on the first run only — subsequent runs skip that step automatically.
+
+---
+
+## Running Tests
 
 ```bash
-   mvn clean compile exec:java
+mvn test
 ```
 
-This clears old build artifacts, recompiles `back.java`, and hosts the site on port 8080.
-Maven resolves dependencies automatically from its local cache — the `lib/` folder is not used.
+The test suite contains 86 tests across three levels:
 
-4. **Check the Terminal:** Look for the following confirmation message:
+| Type | Count | Status |
+|---|---|---|
+| Unit tests | 64 | Automated — pass with no server required |
+| Integration tests | 12 | Require the server to be running on port 8080 before `mvn test` |
+| System tests | 10 | `@Disabled` — executed manually through the browser |
 
-```text
-   --- Flora Catalogue Server Running ---
-   Go to: http://localhost:8080/signin.html
-```
-
-5. **Stop the Server:** Press `Ctrl+C` in the terminal.
-
-> **Note:** The `build_project.bat` script copies dependencies into `lib/` on first run only — subsequent runs will skip this step automatically.
+To run integration tests, start the server first (`mvn clean compile exec:java` in one terminal), then run `mvn test` in a second terminal.
 
 ---
 
-## Technologies (Planned)
+## Technologies
 
-- Frontend: HTML / CSS / JavaScript
-- Backend: Java
-- Version Control: Git + GitHub
-- Database: SQL (e.g., MySQL / SQLite)
-
----
-
-## Current Status
-
-Login, search, add, remove, logout, login all work; sign up is almost finished; Reset password being worked on; later iteration features are still being designed .
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Java (Javalin framework)
+- **Database:** SQLite (via JDBC)
+- **Testing:** JUnit 5, in-memory SQLite for unit tests, Java HttpClient for integration tests
+- **Build:** Maven
+- **Version Control:** Git + GitHub
