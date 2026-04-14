@@ -96,12 +96,12 @@ All routes are handled by the Javalin server in `back.java`. The following endpo
 
 ### State Chart
 
-![alt text](statechart_uml.png)
+![alt text](diagrams/statechart_uml.png)
 
 ### Class Diagram
 
-![alt text](class_uml.png)
+![alt text](diagrams/class_uml.png)
 
 ### Use Case Diagram
 
-![alt text](florafinder_usecase_UML.png)
+![alt text](diagrams/florafinder_usecase_UML.png)
