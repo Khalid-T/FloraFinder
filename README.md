@@ -90,11 +90,11 @@ mvn test
 
 The test suite contains 86 tests across three levels:
 
-| Type | Count | Status |
-|---|---|---|
-| Unit tests | 64 | Automated — pass with no server required |
-| Integration tests | 12 | Require the server to be running on port 8080 before `mvn test` |
-| System tests | 10 | `@Disabled` — executed manually through the browser |
+| Type              | Count | Status                                                          |
+| ----------------- | ----- | --------------------------------------------------------------- |
+| Unit tests        | 64    | Automated — pass with no server required                        |
+| Integration tests | 12    | Require the server to be running on port 8080 before `mvn test` |
+| System tests      | 10    | `@Disabled` — executed manually through the browser             |
 
 To run integration tests, start the server first (`mvn clean compile exec:java` in one terminal), then run `mvn test` in a second terminal.
 
@@ -108,3 +108,11 @@ To run integration tests, start the server first (`mvn clean compile exec:java` 
 - **Testing:** JUnit 5, in-memory SQLite for unit tests, Java HttpClient for integration tests
 - **Build:** Maven
 - **Version Control:** Git + GitHub
+
+---
+
+### Documentation
+
+[Developer Documentation](developer_documentation.md)
+
+[User Guide](user_guide.md)
