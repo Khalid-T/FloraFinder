@@ -2,6 +2,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import io.javalin.Javalin;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 
 public class back {
     private boolean is_admin = false;
@@ -182,15 +184,38 @@ public class back {
         conn.close();
     }
 
+    public String hashing(String hashthis) {
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        char[] passwordChars = hashthis.toCharArray();
+        try {
+            return argon2.hash(2, 65536, 1, passwordChars);
+        } finally {
+            argon2.wipeArray(passwordChars);
+        }
+    }
+    public boolean verifyPassword(String hash, String password) {
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+        char[] passwordChars = password.toCharArray();
+        try {
+            return argon2.verify(hash, passwordChars);
+        } finally {
+            argon2.wipeArray(passwordChars);
+        }
+    }
     // ----------------------- reset password
     // -------------------------------------------
     public String reset_password(String username, String password, String new_pass) throws SQLException {
-        PreparedStatement check = conn.prepareStatement("SELECT * FROM users WHERE username = ? AND password = ?");
+        PreparedStatement check = conn.prepareStatement("SELECT password FROM users WHERE username = ?");
         check.setString(1, username);
-        check.setString(2, password);
         ResultSet rs = check.executeQuery();
 
         if (rs.next() == false) {
+            System.out.println("[log] failed reset password for " + username);
+            return "Username or password is wrong";
+        }
+
+        String storedHash = rs.getString("password");
+        if (!verifyPassword(storedHash, password)) {
             System.out.println("[log] failed reset password for " + username);
             return "Username or password is wrong";
         }
@@ -201,7 +226,7 @@ public class back {
         }
 
         PreparedStatement update = conn.prepareStatement("UPDATE users SET password = ? WHERE username = ?");
-        update.setString(1, new_pass);
+        update.setString(1, hashing(new_pass));
         update.setString(2, username);
         update.executeUpdate();
 
@@ -275,12 +300,14 @@ public class back {
     // ================================= Sign Up ===================================
     public String sign_up(String username, String password, int admin) throws SQLException {
 
+        String hashed = hashing(password);
+
         String insertSql = "INSERT INTO users (username, password, admin) VALUES (?, ?, ?)";
 
         PreparedStatement addusr = conn.prepareStatement(insertSql);
 
         addusr.setString(1, username);
-        addusr.setString(2, password);
+        addusr.setString(2, hashed);
         addusr.setInt(3, admin);
 
         addusr.executeUpdate();
@@ -314,16 +341,18 @@ public class back {
     // --------------------------------------------
     public boolean login(String username, String password) throws SQLException {
 
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE username = ? AND password = ?");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE username = ?");
         stmt.setString(1, username);
-        stmt.setString(2, password);
 
         boolean success = false;
 
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
-            success = true;
-            is_admin = rs.getInt("admin") == 1;
+            String storedHash = rs.getString("password");
+            if (verifyPassword(storedHash, password)) {
+                success = true;
+                is_admin = rs.getInt("admin") == 1;
+            }
         }
 
         rs.close();
