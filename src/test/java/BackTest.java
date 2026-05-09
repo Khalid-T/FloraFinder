@@ -73,6 +73,53 @@ public class BackTest {
     void testLoginUserNotFound() throws SQLException {
         assertFalse(app.login("ghost", "123"));
     }
+    @Test
+    void testHashing() throws SQLException{
+        app.hashing("khalid!");
+
+    }
+
+    @Test
+    void testHashingProducesArgon2Output() {
+        String hash = app.hashing("hunter2");
+        assertNotNull(hash);
+        assertTrue(hash.startsWith("$argon2id$"), "hash should be in Argon2id encoded form, got: " + hash);
+        assertNotEquals("hunter2", hash);
+    }
+
+    @Test
+    void testHashingIsSalted() {
+        String a = app.hashing("samepassword");
+        String b = app.hashing("samepassword");
+        assertNotEquals(a, b, "hashing the same input twice should produce different outputs (random salt)");
+    }
+
+    @Test
+    void testVerifyPasswordCorrect() {
+        String hash = app.hashing("correcthorsebatterystaple");
+        assertTrue(app.verifyPassword(hash, "correcthorsebatterystaple"));
+    }
+
+    @Test
+    void testVerifyPasswordWrong() {
+        String hash = app.hashing("correcthorsebatterystaple");
+        assertFalse(app.verifyPassword(hash, "wrongpassword"));
+    }
+
+    @Test
+    void testVerifyPasswordIsCaseSensitive() {
+        String hash = app.hashing("CaseMatters");
+        assertFalse(app.verifyPassword(hash, "casematters"));
+    }
+
+    @Test
+    void testHashingEmptyString() {
+        String hash = app.hashing("");
+        assertNotNull(hash);
+        assertTrue(hash.startsWith("$argon2id$"));
+        assertTrue(app.verifyPassword(hash, ""));
+        assertFalse(app.verifyPassword(hash, "x"));
+    }
     // ---------------------- password reset ---------------------
     @Test
     void testResetPasswordUserNotThere() throws SQLException{
