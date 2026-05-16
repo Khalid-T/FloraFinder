@@ -9,6 +9,13 @@ build/
 out/
 target/
 
+# databse
+database/database.db
+
+# uploads
+uploads/*
+!uploads/.gitkeep
+
 # Logs
 *.log
 
