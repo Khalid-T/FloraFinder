@@ -6,8 +6,38 @@ import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
 public class back {
-    private boolean is_admin = false;
     public Connection conn; // inialision conn to the database so i can access it form anywhere
+
+    private static boolean isAdminSession(io.javalin.http.Context ctx) {
+      Boolean flag = ctx.sessionAttribute("isAdmin");
+      return flag != null && flag;
+  } 
+    private static final String PLANT_COLUMNS =
+            "id, common_name, sci_name, family, genus, species_epithet, " +
+            "care_level, watering, origin, description, image_url";
+
+    private static final String PLANT_COLUMNS_P =
+            "p.id, p.common_name, p.sci_name, p.family, p.genus, p.species_epithet, " +
+            "p.care_level, p.watering, p.origin, p.description, p.image_url";
+
+    private static String plantsToJson(List<String[]> rows) {
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < rows.size(); i++) {
+            String[] p = rows.get(i);
+            json.append("[");
+            for (int j = 0; j < p.length; j++) {
+                String cleaned = (p[j] == null) ? "" : p[j].replace("\\", "\\\\").replace("\"", "\\\"");
+                json.append("\"").append(cleaned).append("\"");
+                if (j < p.length - 1)
+                    json.append(",");
+            }
+            json.append("]");
+            if (i < rows.size() - 1)
+                json.append(",");
+        }
+        json.append("]");
+        return json.toString();
+    }
 
     public back() throws SQLException {
         conn = DriverManager.getConnection("jdbc:sqlite:./database/database.db");
@@ -78,9 +108,7 @@ public class back {
     public List<String[]> getCollection(String username) throws SQLException {
         List<String[]> results = new ArrayList<>();
         PreparedStatement stmt = conn.prepareStatement(
-                "SELECT p.id, p.common_name, p.sci_name, p.family, p.genus, p.species_epithet, " +
-                        "       p.care_level, p.watering, p.origin, p.description, p.image_url " +
-                        "FROM plants p " +
+                "SELECT " + PLANT_COLUMNS_P + " FROM plants p " +
                         "JOIN collections c ON c.plant_id = p.id " +
                         "JOIN users u ON u.id = c.user_id " +
                         "WHERE u.username = ?");
@@ -117,9 +145,7 @@ public class back {
 
         // Fetch all plants not already in this user's collection
         PreparedStatement allPlants = conn.prepareStatement(
-                "SELECT p.id, p.common_name, p.sci_name, p.family, p.genus, p.species_epithet, " +
-                        "       p.care_level, p.watering, p.origin, p.description, p.image_url " +
-                        "FROM plants p " +
+                "SELECT " + PLANT_COLUMNS_P + " FROM plants p " +
                         "WHERE p.id NOT IN (" +
                         "  SELECT c.plant_id FROM collections c " +
                         "  JOIN users u ON u.id = c.user_id WHERE u.username = ?" +
@@ -236,10 +262,6 @@ public class back {
 
     // ========================== Remove User ====================================
     public String removeusr(String username) throws SQLException {
-        if (is_admin == false) {
-            System.out.println("[log] login first");
-            return "login as an admin first";
-        }
         PreparedStatement removed = conn.prepareStatement(
                 "DELETE FROM  users Where username = ?");
 
@@ -253,10 +275,7 @@ public class back {
 
     // ================================== SHOW ALL USERS =======================
     public String getAllUsers() throws SQLException {
-        if (is_admin == false) {
-            System.out.println("[log] login first");
-            return "login as an admin first";
-        }
+
         StringBuilder result = new StringBuilder();
         String sql = "SELECT * FROM users";
 
@@ -276,11 +295,7 @@ public class back {
 
     // ================================ Promote ==================================
     public String promote(String username) throws SQLException {
-        if (is_admin == false) {
-            System.out.println("[log] login first");
-            return "login as an admin first";
-        }
-
+        
         PreparedStatement promo = conn.prepareStatement("UPDATE users SET admin = ? WHERE username = ?");
 
         promo.setString(1, "1");
@@ -293,8 +308,14 @@ public class back {
         return username + " has been promoted";
     }
 
-    public boolean isAdmin() {
-        return is_admin;
+    public boolean isUserAdmin(String username) throws SQLException{
+        PreparedStatement stmt = conn.prepareStatement("SELECT admin FROM users WHERE  username = ?");
+        stmt.setString(1,username);
+        ResultSet rs = stmt.executeQuery();
+        boolean admin = rs.next() && rs.getInt("admin") == 1;
+        stmt.close();
+        return admin;
+        
     }
 
     // ================================= Sign Up ===================================
@@ -324,18 +345,7 @@ public class back {
         }
     }
 
-    public void logout() {
-        if (is_admin == true) {
-            System.out.println("[log] admin has logged off");
-            is_admin = false;
-
-        } else {
-            System.out.println("[log] user has logged off");
-            is_admin = false;
-
-        }
-
-    }
+    
 
     // ------------------------------------login
     // --------------------------------------------
@@ -351,7 +361,6 @@ public class back {
             String storedHash = rs.getString("password");
             if (verifyPassword(storedHash, password)) {
                 success = true;
-                is_admin = rs.getInt("admin") == 1;
             }
         }
 
@@ -361,7 +370,7 @@ public class back {
         if (success) {
             System.out.println("[log] " + username + " has logged in");
 
-            if (is_admin) {
+            if (isUserAdmin(username)) {
                 System.out.println("[log] user is admin");
             } else {
                 System.out.println("[log] user is normal user");
@@ -376,10 +385,6 @@ public class back {
 
     // ------------------------- remove fuction-----------------------
     public String remove(String entry) throws SQLException {
-        if (is_admin == false) {
-            System.out.println("[log] login first");
-            return "login as an admin first";
-        }
         PreparedStatement removed = conn.prepareStatement(
                 "DELETE FROM plants Where common_name = ?");
 
@@ -394,9 +399,6 @@ public class back {
     }
 
     public String updateDescription(String commonName, String newDescription) throws SQLException {
-        if (is_admin == false) {
-            return "login as admin first";
-        }
         PreparedStatement stmt = conn.prepareStatement(
                 "UPDATE plants SET description = ? WHERE common_name = ?");
         stmt.setString(1, newDescription);
@@ -412,10 +414,7 @@ public class back {
     public String updatePlant(String oldCommonName, String newCommonName, String sciName, String family,
                               String genus, String speciesEpithet, String careLevel, String watering,
                               String origin, String description, String imageUrl) throws SQLException {
-        if (is_admin == false) {
-            return "login as admin first";
-        }
-        PreparedStatement stmt = conn.prepareStatement(
+               PreparedStatement stmt = conn.prepareStatement(
                 "UPDATE plants SET common_name = ?, sci_name = ?, family = ?, genus = ?, species_epithet = ?, " +
                         "care_level = ?, watering = ?, origin = ?, description = ?, image_url = ? WHERE common_name = ?");
         stmt.setString(1, newCommonName);
@@ -442,10 +441,6 @@ public class back {
     public String add(String common_name, String sci_name, String family, String genus, String species_epithet,
                       String care_level, String watering, String origin, String description, String image_url) throws SQLException {
 
-        if (is_admin == false) {
-            System.out.println("[log] login first");
-            return "login as admin before adding plants";
-        }
 
         PreparedStatement added = conn.prepareStatement(
                 "INSERT INTO plants (common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -478,9 +473,7 @@ public class back {
         List<String[]> results = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-                "SELECT id, common_name, sci_name, family, genus, species_epithet, care_level, watering, origin, description, image_url "
-                        +
-                        "FROM plants WHERE LOWER(common_name) LIKE LOWER(?)");
+                "SELECT " + PLANT_COLUMNS + " FROM plants WHERE LOWER(common_name) LIKE LOWER(?)");
 
         if (careLevel != null && !careLevel.isEmpty())
             sql.append(" AND LOWER(care_level) = LOWER(?)");
@@ -543,17 +536,31 @@ public class back {
 
 // GET ALL USERS
         server.get("/getUsers", ctx -> {
+            if (!isAdminSession(ctx)) {
+                ctx.status(403).result("admin only");
+                return;
+            }
+
             ctx.result(appLogic.getAllUsers());
         });
 
 // PROMOTE USER
         server.get("/promote", ctx -> {
+            if (!isAdminSession(ctx)) {
+                ctx.status(403).result("admin only");
+                return;
+            }
+   
             String username = ctx.queryParam("username");
             ctx.result(appLogic.promote(username));
         });
 
 // DELETE USER
         server.get("/removeUser", ctx -> {
+            if (!isAdminSession(ctx)) {
+                ctx.status(403).result("admin only");
+                return;
+            }
             String username = ctx.queryParam("username");
             ctx.result(appLogic.removeusr(username));
         });
@@ -568,6 +575,7 @@ public class back {
 
             if (appLogic.login(user, pass)) {
                 ctx.sessionAttribute("currentUser", user);
+                ctx.sessionAttribute("isAdmin",appLogic.isUserAdmin(user));
                 ctx.redirect("/index.html");
 
             } else {
@@ -576,10 +584,13 @@ public class back {
         });
         server.get("/logout", ctx -> {
             ctx.req().getSession().invalidate();
-            appLogic.logout();
             ctx.redirect("/signin.html");
         });
         server.post("/add-plant", ctx -> {
+            if(!isAdminSession(ctx)){
+                ctx.status(403).result("admin only");
+                return;
+            }
             String commonName = ctx.formParam("common_name");
             String sciName = ctx.formParam("sci_name");
             String family = ctx.formParam("family");
@@ -596,6 +607,10 @@ public class back {
         });
 
         server.post("/remove-plant", ctx -> {
+            if(!isAdminSession(ctx)){
+                ctx.status(403).result("admin only");
+                return;
+            }
             String commonName = ctx.formParam("common_name");
 
             String result = appLogic.remove(commonName);
@@ -603,12 +618,21 @@ public class back {
             ctx.result(result);
         });
         server.post("/update-description", ctx -> {
+            if (!isAdminSession(ctx)) {
+                ctx.status(403).result("admin only");
+                return;
+            }
+
             String commonName = ctx.formParam("common_name");
             String description = ctx.formParam("description");
             String result = appLogic.updateDescription(commonName, description);
             ctx.result(result);
         });
         server.post("/update-plant", ctx -> {
+            if(!isAdminSession(ctx)){
+                ctx.status(403).result("admin only");
+                return;
+            }
             String oldName = ctx.formParam("old_common_name");
             String newName = ctx.formParam("common_name");
             String sciName = ctx.formParam("sci_name");
@@ -624,10 +648,10 @@ public class back {
             ctx.result(result);
         });
         server.post("/upload-image", ctx -> {
-            if (!appLogic.isAdmin()) {
-                ctx.status(401).result("admin only");
+            if (!isAdminSession(ctx)) {
+                ctx.status(403).result("admin only");
                 return;
-            }
+            } 
             var file = ctx.uploadedFile("image");
             if (file == null) {
                 ctx.status(400).result("no file");
@@ -660,24 +684,8 @@ public class back {
 
             List<String[]> results = appLogic.searchWithFilters(query, careLevel, watering, origin);
 
-            StringBuilder json = new StringBuilder("[");
-            for (int i = 0; i < results.size(); i++) {
-                String[] p = results.get(i);
-                json.append("[");
-                for (int j = 0; j < p.length; j++) {
-                    String cleaned = (p[j] == null) ? "" : p[j].replace("\\", "\\\\").replace("\"", "\\\"");
-                    json.append("\"").append(cleaned).append("\"");
-                    if (j < p.length - 1)
-                        json.append(",");
-                }
-                json.append("]");
-                if (i < results.size() - 1)
-                    json.append(",");
-            }
-            json.append("]");
-
             ctx.contentType("application/json");
-            ctx.result(json.toString());
+            ctx.result(plantsToJson(results));
         });
         //
         server.get("/featured-plants", ctx -> {
@@ -686,24 +694,8 @@ public class back {
             java.util.Collections.shuffle(results);
             List<String[]> featured = results.subList(0, Math.min(9, results.size()));
 
-            StringBuilder json = new StringBuilder("[");
-            for (int i = 0; i < featured.size(); i++) {
-                String[] p = featured.get(i);
-                json.append("[");
-                for (int j = 0; j < p.length; j++) {
-                    String cleaned = (p[j] == null) ? "" : p[j].replace("\\", "\\\\").replace("\"", "\\\"");
-                    json.append("\"").append(cleaned).append("\"");
-                    if (j < p.length - 1)
-                        json.append(",");
-                }
-                json.append("]");
-                if (i < featured.size() - 1)
-                    json.append(",");
-            }
-            json.append("]");
-
             ctx.contentType("application/json");
-            ctx.result(json.toString());
+            ctx.result(plantsToJson(featured));
         });
         server.get("/get-user", ctx -> {
             String user = ctx.sessionAttribute("currentUser");
@@ -717,7 +709,7 @@ public class back {
         server.get("/is-admin", ctx -> {
             String user = ctx.sessionAttribute("currentUser");
             if (user != null) {
-                ctx.result(appLogic.isAdmin() ? "true" : "false");
+                ctx.result(isAdminSession(ctx) ? "true" : "false");
             } else {
                 ctx.status(401);
             }
@@ -756,7 +748,13 @@ public class back {
                 return;
             }
 
-            int plantId = Integer.parseInt(plantIdStr);
+            int plantId;
+            try {
+                plantId = Integer.parseInt(plantIdStr);
+            } catch (NumberFormatException e) {
+                ctx.status(400).result("invalid plant_id");
+                return;
+            }
             String result = appLogic.addToCollection(user, plantId);
             ctx.result(result);
         });
@@ -774,7 +772,13 @@ public class back {
                 return;
             }
 
-            int plantId = Integer.parseInt(plantIdStr);
+            int plantId;
+            try {
+                plantId = Integer.parseInt(plantIdStr);
+            } catch (NumberFormatException e) {
+                ctx.status(400).result("invalid plant_id");
+                return;
+            }
             String result = appLogic.removeFromCollection(user, plantId);
             ctx.result(result);
         });
@@ -788,24 +792,8 @@ public class back {
 
             List<String[]> results = appLogic.getCollection(user);
 
-            StringBuilder json = new StringBuilder("[");
-            for (int i = 0; i < results.size(); i++) {
-                String[] p = results.get(i);
-                json.append("[");
-                for (int j = 0; j < p.length; j++) {
-                    String cleaned = (p[j] == null) ? "" : p[j].replace("\\", "\\\\").replace("\"", "\\\"");
-                    json.append("\"").append(cleaned).append("\"");
-                    if (j < p.length - 1)
-                        json.append(",");
-                }
-                json.append("]");
-                if (i < results.size() - 1)
-                    json.append(",");
-            }
-            json.append("]");
-
             ctx.contentType("application/json");
-            ctx.result(json.toString());
+            ctx.result(plantsToJson(results));
         });
 
         server.get("/get-recommendations", ctx -> {
@@ -817,24 +805,8 @@ public class back {
 
             List<String[]> results = appLogic.getRecommendations(user);
 
-            StringBuilder json = new StringBuilder("[");
-            for (int i = 0; i < results.size(); i++) {
-                String[] p = results.get(i);
-                json.append("[");
-                for (int j = 0; j < p.length; j++) {
-                    String cleaned = (p[j] == null) ? "" : p[j].replace("\\", "\\\\").replace("\"", "\\\"");
-                    json.append("\"").append(cleaned).append("\"");
-                    if (j < p.length - 1)
-                        json.append(",");
-                }
-                json.append("]");
-                if (i < results.size() - 1)
-                    json.append(",");
-            }
-            json.append("]");
-
             ctx.contentType("application/json");
-            ctx.result(json.toString());
+            ctx.result(plantsToJson(results));
         });
 
         // reset password
