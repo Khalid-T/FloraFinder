@@ -46,15 +46,43 @@ public class back {
 
     private void initTables() throws SQLException {
         Statement stmt = conn.createStatement();
-        stmt.execute(
-                "CREATE TABLE IF NOT EXISTS collections (" +
-                        "  id       INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "  user_id  INTEGER NOT NULL REFERENCES users(id)  ON DELETE CASCADE," +
-                        "  plant_id INTEGER NOT NULL REFERENCES plants(id) ON DELETE CASCADE," +
-                        "  UNIQUE(user_id, plant_id)" +
-                        ")");
+
+        stmt.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id       INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE,
+                password TEXT,
+                admin    INTEGER DEFAULT 0
+            )
+        """);
+
+        stmt.execute("""
+            CREATE TABLE IF NOT EXISTS plants (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                common_name     TEXT NOT NULL,
+                sci_name        TEXT NOT NULL,
+                family          TEXT,
+                genus           TEXT,
+                species_epithet TEXT,
+                care_level      TEXT,
+                watering        TEXT,
+                origin          TEXT,
+                description     TEXT,
+                image_url       TEXT
+            )
+        """);
+
+        stmt.execute("""
+            CREATE TABLE IF NOT EXISTS collections (
+                id       INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id  INTEGER NOT NULL REFERENCES users(id)  ON DELETE CASCADE,
+                plant_id INTEGER NOT NULL REFERENCES plants(id) ON DELETE CASCADE,
+                UNIQUE(user_id, plant_id)
+            )
+        """);
+
         stmt.close();
-        System.out.println("[Log] Collections table verified/created");
+        System.out.println("[Log] Tables verified/created");
     }
 
     public String addToCollection(String username, int plantId) throws SQLException {
