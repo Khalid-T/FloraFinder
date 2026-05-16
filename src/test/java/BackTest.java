@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
  
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
  
@@ -158,8 +160,17 @@ public class BackTest {
 
     @Test
     void testShowAllUsersWithoutAdmin() throws SQLException {
+        // Arrange: another user exists whose data should NOT be exposed
+        app.sign_up("victim", "secret", 0);
+
+        // Act: non-admin asks for the user list
         app.sign_up("guest", "guest", 0);
-        assertEquals("login as an admin first", app.getAllUsers());
+        app.login("guest", "guest");
+        String result = app.getAllUsers();
+
+        // Assert: non-admin must not see other users' data
+        assertFalse(result.contains("victim"),
+                "non-admin getAllUsers must not expose other usernames");
     }
     //--------------------- SIGN-UP TESTS ---------------------
     @Test
@@ -192,8 +203,18 @@ public class BackTest {
 
     @Test
     void testRemoveUserWithoutAdmin() throws SQLException {
+        // Arrange: a victim user exists
+        app.sign_up("victim", "pw", 0);
+
+        // Act: non-admin tries to delete them
         app.sign_up("guest", "guest", 0);
-        assertEquals("login as an admin first", app.removeusr("guest"));
+        app.login("guest", "guest");
+        app.removeusr("victim");
+
+        // Assert: victim can still log in — still in the DB
+        app.logout();
+        assertTrue(app.login("victim", "pw"),
+                "non-admin removeusr must not delete the user");
     }
 
     @Test
@@ -215,35 +236,57 @@ public class BackTest {
                 
     @Test
     void testPromoteActuallyChangesRole() throws SQLException {
+        // Arrange: admin and non-admin user
         app.sign_up("admin", "pass", 1);
         app.sign_up("guest", "guest", 0);
         app.login("admin", "pass");
+
+        // Act: admin promotes guest
         app.promote("guest");
-        app.logout();
-        app.login("guest", "guest");
-        assertTrue(app.isAdmin());
+
+        // Assert: guest's admin column in the DB is now 1
+        assertEquals(1, adminFlagOf("guest"),
+                "promote should set the admin flag to 1 in the database");
     }
 
     @Test
     void testPromoteWithoutAdmin() throws SQLException {
+        // Arrange: a target user exists, non-admin = 0
+        app.sign_up("target", "pw", 0);
+
+        // Act: non-admin tries to promote them
         app.sign_up("guest", "guest", 0);
-        assertEquals("login as an admin first", app.promote("guest"));
+        app.login("guest", "guest");
+        app.promote("target");
+
+        // Assert: target's admin column is still 0
+        assertEquals(0, adminFlagOf("target"),
+                "non-admin promote must not change the admin flag");
     }
-                
-    //--------------------- LOGOUT TEST ----------------------
-    @Test
-    void testLogoutResetsAdmin() throws SQLException {
-        app.sign_up("admin", "pass", 1);
-        app.login("admin", "pass");
-        app.logout();
-        assertFalse(app.isAdmin());
+
+    // Small helper: read the admin column directly so tests don't depend on isAdmin()
+    private int adminFlagOf(String username) throws SQLException {
+        PreparedStatement stmt = app.conn.prepareStatement(
+                "SELECT admin FROM users WHERE username = ?");
+        stmt.setString(1, username);
+        ResultSet rs = stmt.executeQuery();
+        assertTrue(rs.next(), "expected user " + username + " to exist");
+        int flag = rs.getInt("admin");
+        stmt.close();
+        return flag;
     }
- 
+
+
     //--------------------- ADD PLANT TESTS ------------------- [UT-10-CB]
     @Test
     void testAddWithoutAdmin() throws SQLException {
-        String result = app.add("SYM", "Sci", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "A common garden rose.", null);
-        assertEquals("login as admin before adding plants", result);
+
+        app.sign_up("guest","guest",0);
+        app.login("guest","guest");
+        app.add("SYM", "Sci", "Rosaceae", "Rosa", "indica", "Medium", "Moderate", "USA", "A common garden rose.", null);
+
+        List<String[]> rows = app.searchWithFilters("SYM",null,null,null);
+        assertTrue(rows.isEmpty());
     }
 
     @Test
@@ -261,8 +304,17 @@ public class BackTest {
     //--------------------- REMOVE PLANT TESTS ---------------- [UT-11-CB]
     @Test
     void testRemoveWithoutAdmin() throws SQLException {
-        String result = app.remove("Rose");
-        assertEquals("login as an admin first", result);
+        app.sign_up("admin","admin",1);
+        app.login("admin","admin");
+        app.add("Rose",null,null,null,null,null,null,null,null,null);
+        app.logout();
+        
+        app.sign_up("guest","guest",0);
+        app.login("guest","guest");
+
+        app.remove("Rose");
+        List<String[]> rows = app.searchWithFilters("Rose",null,null,null);
+        assertFalse(rows.isEmpty());
     }
  
     @Test
@@ -300,8 +352,18 @@ public class BackTest {
 
     @Test
     void testUpdateDescriptionWithoutAdmin() throws SQLException {
-        String result = app.updateDescription("Oak", "New description.");
-        assertEquals("login as admin first", result);
+        app.sign_up("admin", "admin", 1);
+        app.login("admin", "admin");
+        app.add("Oak", "Quercus robur", "Fagaceae", "Quercus", "robur",
+                "Low", "Minimum", "Europe", "Old description", null);
+        app.logout();
+
+        app.sign_up("guest", "guest", 0);
+        app.login("guest", "guest");
+        app.updateDescription("Oak", "New description.");
+        
+        List<String[]> results = app.searchWithFilters("Oak", null, null, null);
+        assertEquals("Old description", results.get(0)[9]);
     }
 
     @Test
@@ -323,8 +385,24 @@ public class BackTest {
 
     @Test
     void testUpdatePlantWithoutAdmin() throws SQLException {
-        String result = app.updatePlant("Fern", "Eagle Fern", "Pteridium aquilinum", "Dennstaedtiaceae", "Pteridium", "aquilinum", "Low", "Average", "Europe", "Desc.", null);
-        assertEquals("login as admin first", result);
+        // Arrange: admin adds Fern with a known description
+        app.sign_up("admin", "pass", 1);
+        app.login("admin", "pass");
+        app.add("Fern", "Pteridium aquilinum", "Dennstaedtiaceae", "Pteridium", "aquilinum",
+                "Low", "Average", "Europe", "Original.", null);
+        app.logout();
+
+        // Act: non-admin tries to overwrite the plant entirely
+        app.sign_up("guest", "guest", 0);
+        app.login("guest", "guest");
+        app.updatePlant("Fern", "Eagle Fern", "Pteridium aquilinum", "Dennstaedtiaceae",
+                "Pteridium", "aquilinum", "Low", "Average", "Europe", "Hijacked.", null);
+
+        // Assert: row is unchanged — name still "Fern", description still "Original."
+        List<String[]> results = app.searchWithFilters("Fern", null, null, null);
+        assertFalse(results.isEmpty(), "Fern should still exist under its original name");
+        assertEquals("Original.", results.get(0)[9],
+                "non-admin updatePlant must not change the description");
     }
 
     @Test
