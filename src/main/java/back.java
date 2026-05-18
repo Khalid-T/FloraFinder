@@ -548,6 +548,7 @@ public class back {
         // connection logic
         back appLogic = new back();
 
+        int port = Integer.parseInt(System.getenv().getOrDefault("PORT","8080"));
         // start the Javalin Server
         Javalin server = Javalin.create(config -> {
             config.staticFiles.add("/static");
@@ -556,9 +557,9 @@ public class back {
                 staticFiles.location = io.javalin.http.staticfiles.Location.EXTERNAL;
                 staticFiles.hostedPath = "/uploads";
             });
-        }).start(8080);
+        }).start(port);
         System.out.println("--- Flora Catalogue Server Running ---");
-        System.out.println("Go to: http://localhost:8080/signin.html");
+        System.out.println("Go to: http://localhost:"+port+"/signin.html");
 
         // ================= ADMIN DASHBOARD ROUTES =================
 
